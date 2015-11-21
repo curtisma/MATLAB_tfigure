@@ -1,9 +1,17 @@
-% tFigExample An example showing how to use tfigure
+% 
+%% tFigExample
+% An example showing how to use tfigure.  It makes a single tfigure with 2
+% tabs and several plots per tab.
+%
+% Author: Curtis Mayberry
+% Curtisma3@gmail.com
+% Curtisma.org
+%
 function h = tFigExample
 close all;
 
 %% Start a new tfigure
-% DESCRIPTIVE TEXT
+% Creates a new tfigure and defines the first tab's plots
 h = tfigure;
 h.addPlot(h.tabs,@() plot(1:10,1:10),'Linear');
 h.addPlot(h.tabs,@plotExample,'Random'); % The plotExample plotting routine is defined below.

@@ -94,12 +94,12 @@ classdef tfigure < hgsetget
         %  When the button is selected the plotting routine given by
         %  fun_handle is ran.
         p=inputParser;
-        p.addRequired('tab',@(x) (isa(x,'matlab.ui.container.Tab') || ischar(x)))
+        p.addRequired('tab',@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
         p.addRequired('fun_handle',@(x) isa(x,'function_handle'));
         p.addOptional('title','plot',@ischar)
         p.parse(tab,fun_handle,varargin{:})
             if(ischar(tab))
-                tab_obj = findobj(tab,'Title',tab);
+                tab_obj = findobj(tab,'Type','tab');
                 if(isempty(tab_obj))
                     obj.addTab(tab)
                 else

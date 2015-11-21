@@ -1,19 +1,19 @@
 % tFigExample An example showing how to use tfigure
-function tFigExample
+function h = tFigExample
 close all;
 
 %% Start a new tfigure
 % DESCRIPTIVE TEXT
 h = tfigure;
-h.addPlot(h.tabs,@() plot(1:10,1:10));
-h.addPlot(h.tabs,@plotExample); % The plotExample plotting routine is defined below.
+h.addPlot(h.tabs,@() plot(1:10,1:10),'Linear');
+h.addPlot(h.tabs,@plotExample,'Random'); % The plotExample plotting routine is defined below.
 
 %% Create the second tab
 % The second tab will have the title Test Tab and contain 3 plots.
 h.addTab('Test Tab');
 h.addPlot(h.tabs(2),@() plot(1:5,1:5));
-h.addPlot(h.tabs(2),@() plot(1:20,1:20));
-h.addPlot(h.tabs(2),@() plot(1:10,rand(1,10)));
+h.addPlot(h.tabs(2),@() plot(1:20,1:20),'Linear 10');
+h.addPlot(h.tabs(2),@() plot(1:10,rand(1,10)),'Random');
 
 %% Add a Summary tab as the first tab 
 % The summary tab is still a work in progress and currently just creates a

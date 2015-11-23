@@ -1,13 +1,12 @@
-% 
-%% tFigExample
-% An example showing how to use tfigure.  It makes a single tfigure with 2
-% tabs and several plots per tab.
+function h = tFigExample
+%tFigExample An example showing how to use tfigure.  
+% It makes a single tfigure with 2 tabs and several plots per tab.
 %
 % Author: Curtis Mayberry
 % Curtisma3@gmail.com
 % Curtisma.org
 %
-function h = tFigExample
+% see also: tfigure
 close all;
 
 %% Start a new tfigure

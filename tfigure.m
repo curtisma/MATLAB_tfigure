@@ -39,6 +39,7 @@ classdef tfigure < hgsetget
     properties
         fig % Handle to the figure that displays tfigure.
         tabs % Handles to each of the tfigure's tabs
+        menu % Tfigure menu
     end
     properties (Dependent)
         figureSize % Current size of the figure containing tfigure
@@ -56,6 +57,8 @@ classdef tfigure < hgsetget
                              'SizeChangedFcn',@obj.figResize); 
             obj.tabGroup = uitabgroup('Parent', obj.fig);
             obj.addTab;
+            obj.menu = uimenu(obj.fig,'Label','Tfigure');
+            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.savePPT)
             obj.fig.Visible = 'on';
         end
         function out = get.figureSize(obj)
@@ -130,7 +133,7 @@ classdef tfigure < hgsetget
         %
            
         end
-        function savePPT(obj,fileName,varargin)
+        function savePPT(obj,varargin)
         % savePPT Saves all the plots in tfigure to a powerpoint 
         %  presentation.  
         % 
@@ -145,11 +148,18 @@ classdef tfigure < hgsetget
                 figTitle = ['Figure ' num2str(obj.fig.Number) ' Data'];
             end
             p = inputParser;
-            p.addParameter('title',figTitle)
+            p.addOptional('fileName','',@ischar);
+            p.addParameter('title',figTitle);
             p.addParameter('author','');
-            p.addParameter('subject','')
+            p.addParameter('subject','');
             p.addParameter('comments','');
             p.parse(varargin{:});
+            if(isempty(p.Results.fileName))
+                [fileName,pathname] = uiputfile('.pptx','Export PPTX: select a file name');
+                fileName = fullfile(pathname,fileName);
+            else
+                fileName = p.Results.fileName;
+            end
             isOpen  = exportToPPTX();
             if ~isempty(isOpen),
                 % If PowerPoint already started, then close first and then open a new one

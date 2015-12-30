@@ -101,7 +101,7 @@ classdef tfigure < hgsetget
             p=inputParser;
             p.addRequired('tab',@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
             p.addRequired('fun_handle',@(x) isa(x,'function_handle'));
-            p.addOptional('title','plot',@ischar)
+            p.addParameter('title','plot',@ischar)
             p.parse(tab,fun_handle,varargin{:})
             if(ischar(tab))
                 tab_obj = findobj(tab,'Type','tab');
@@ -210,7 +210,10 @@ classdef tfigure < hgsetget
             set(plotLists,'Units','pixels','Position',[10 10  150 figSize(4)-45])
             % Resize each axis
             axesList = findobj(src,'Type','axes');
-            set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110],'ActivePositionProperty','OuterPosition')
+            l = legend;
+            l.Units = 'pixels';
+            leg_pos = l.Position;
+            set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110] - [0 0 ceil(leg_pos(3)) 0],'ActivePositionProperty','OuterPosition');
             % Reposition plot buttons
             for i_tab = 1:length(obj.tabs)
                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
@@ -219,6 +222,7 @@ classdef tfigure < hgsetget
                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
                 end
             end
+            
         end
         function selectPlot(~,src,~) % ~ is obj and callbackdata
             if isa(src.SelectedObject.UserData, 'function_handle')

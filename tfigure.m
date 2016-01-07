@@ -131,7 +131,33 @@ classdef tfigure < hgsetget
         %
         % TODO
         %
-           
+            p=inputParser;
+            p.addRequired('tab',@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addRequired('fun_handle',@(x) isa(x,'function_handle'));
+            p.addParameter('title','plot',@ischar)
+            p.parse(tab,fun_handle,varargin{:})
+            if(ischar(tab))
+                tab_obj = findobj(tab,'Type','tab');
+                if(isempty(tab_obj))
+                    obj.addTab(tab)
+                else
+                    tab = tab_obj;
+                end
+            end
+            figSize = obj.figureSize;
+            plotList = findobj(tab,'tag','plotList','-and',...
+                                'Type','uibuttongroup');
+            numPlots = length(findobj(plotList,'tag','plot','-and',...
+                                      'Style','togglebutton'));
+%             obj.tabs.UserData.plotlist = cell([]);
+            h = uicontrol('parent',plotList,...
+                            'Style', 'togglebutton',...
+                            'String', p.Results.title,'Units','pixels',...
+                            'Position', [10 figSize(4)-85-30*numPlots 120 20],...
+                            'tag','plot');
+            h.UserData = fun_handle;
+            plotList.SelectedObject = h;
+            obj.selectPlot(plotList,[]);
         end
         function savePPT(obj,varargin)
         % savePPT Saves all the plots in tfigure to a powerpoint 
@@ -203,6 +229,7 @@ classdef tfigure < hgsetget
         function figResize(obj,src,~) % callbackdata is unused 3rd arg.
         % figResize Resizes the gui elements in each tab whenever the 
         %  figure is resized. 
+        
             figSize = obj.figureSize;
             % Resize each list of plots
             plotLists = findobj(src,'tag','plotList','-and',...

@@ -15,14 +15,14 @@ h = tfigure;
 
 %% The first tab will contain a single plot
 h.addPlot(h.tabs,'title','Linear');
-plot(1:10,1:10)
-title('Linear Test Plot')
-xlabel('index')
-ylabel('Linear Plot')
+plot(1:10,1:10);
+title('Linear Test Plot');
+xlabel('index');
+ylabel('Linear Plot');
 
 %% Create the second tab 
 % It will contain a single plot and utilize a function handle to plot
-h.addTab('Exponential')
+h.addTab('Exponential');
 h.addPlot(h.tabs(2),@() plot(1:20,exp(1:20)),'title','Linear FH');
 
 %% Create the Third tab

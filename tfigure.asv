@@ -62,9 +62,8 @@ classdef tfigure < hgsetget
                              'SizeChangedFcn',@obj.figResize); 
             obj.tabGroup = uitabgroup('Parent', obj.fig);
             obj.addTab;
-%             obj.menu = uimenu(obj.fig,'Label','Tfigure');
-            obj.menu = uimenu(obj.fig,'Label','Export');
-            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
+            obj.menu = uimenu(obj.fig,'Label','Tfigure');
+            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.savePPT)
             obj.fig.Visible = 'on';
         end
         function out = get.figureSize(obj)
@@ -233,8 +232,6 @@ classdef tfigure < hgsetget
             summary = findobj(obj.tabs,'Title','Summary');
             if(~isempty(summary))
                 startTab = 2;
-            else
-                startTab = 1;
             end
             for tabNum = startTab:numTabs
                 ht = get(obj.tabs(tabNum));
@@ -311,7 +308,6 @@ classdef tfigure < hgsetget
 
             else
                 axesSize = [50 50 obj.figureSize(3)-90 obj.figureSize(4)-110];
-                src.SelectedObject.UserData.fa.Position = axesSize;
             end
 %             if isa(src.SelectedObject.UserData, 'function_handle')
 %                 axes(findobj(src.Parent,'Type','Axes'));
@@ -326,11 +322,8 @@ classdef tfigure < hgsetget
 % %                 h_new = 
 %             end
         end
-        function exportMenu(obj,menu,ActionData)
-            if(strcmp(menu.Label,'Export PPT'))
-                obj.savePPT();
-            end
-        end    
+        function exportMenu()
+            
     end
 end
 

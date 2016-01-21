@@ -16,29 +16,25 @@ h = tfigure;
 %% The first tab will contain a single plot
 h.addPlot(h.tabs,'title','Linear');
 plot(1:10,1:10)
-title('Linear Test Plot')
-xlabel('index')
-ylabel('Linear Plot')
-
 %% Create the second tab 
 % It will contain a single plot and utilize a function handle to plot
-h.addTab('Exponential')
-h.addPlot(h.tabs(2),@() plot(1:20,exp(1:20)),'title','Linear FH');
+h.addTab('Linear FH')
+h.addPlot(h.tabs(2),@() plot(1:10,1:10),'title','Linear FH');
 
 %% Create the Third tab
 % It will contain 2 plots.  The first plot will be created using the
 % plotting routine plotExample.
-h.addTab('Random Tab');
-h.addPlot(h.tabs(3),@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
-h.addPlot(h.tabs(3));
-plot(1:10,rand(1,10));
-
-%% Create the Fourth tab
-% The Fourth tab will have the title Test Tab and contain 3 plots.
 h.addTab('Test Tab');
-h.addPlot(h.tabs(4),@() plot(1:5,1:5));
-h.addPlot(h.tabs(4),@() plot(1:20,1:20),'title','Linear 10');
-h.addPlot(h.tabs(4),@() plot(1:10,rand(1,10)),'title','Random');
+h.addPlot(h.tabs(3),@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
+h.addPlot(h.tabs(3))
+
+
+%% Create the Third tab
+% The second tab will have the title Test Tab and contain 3 plots.
+h.addTab('Test Tab');
+h.addPlot(h.tabs(3),@() plot(1:5,1:5));
+h.addPlot(h.tabs(3),@() plot(1:20,1:20),'Linear 10');
+h.addPlot(h.tabs(3),@() plot(1:10,rand(1,10)),'Random');
 
 %% Add a Summary tab as the first tab 
 % The summary tab is still a work in progress and currently just creates a

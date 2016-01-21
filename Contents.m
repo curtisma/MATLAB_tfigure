@@ -1,5 +1,5 @@
 % MATLAB_TFIGURE
-% Version 1.1 22-Nov-2015
+% Version 2.0 20-Jan-2016
 %
 % Files
 %   tFigExample - tFigExample An example showing how to use tfigure.  

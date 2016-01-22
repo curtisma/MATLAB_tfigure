@@ -1,5 +1,5 @@
 classdef tfigure < hgsetget
-    %TFIGURE A figure for holding tabbed groups of plots
+    % TFIGURE A figure for holding tabbed groups of plots
     %   Creates a tabbed plot figure.  This allows the user to setup tabs
     %    to group plots.  Each tab contains a list of plots that can be
     %    selected using buttons on the left of the figure.
@@ -16,20 +16,36 @@ classdef tfigure < hgsetget
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
-    %  addSummary - Adds a summary
+    %  savePPT - Saves all plots to a Power Point presentation.
     %
     % Examples:
-    %  <matlab:tfigure_example> tfigure example
+    %  tFigExample - tfigure example
     %
     % TO DO:
-    %  * Finish Summary Slide functionality
-    %  * Add "save all plots" functionality to the summary slide
-    %     * ppt, pictures, figures
-    %  * Add support for using a ppt template
+    %  * Single Plot Resizing Issue
     %  * Add tables as an option for displaying data
-    %  * Add a uicontextmenu for editing plots and tabs when the user right
-    %   clicks on them.  This would allow the user to change the name, etc.
-    %  * Add ability to change tab names using inputdlg function
+    %  * Export Menu Development
+    %     * ppt, pictures, figures, copy image to clipboard
+    %     * Add support for using a ppt template
+    %  * Control View
+    %     * Ability to add a button to the plot list to select a control
+    %     panel view in that tab.
+    %  * Plot List
+    %     * Be able to add text Labels to group plots
+    %     * Be able to move plots up or down using mouse or a keyboard
+    %     shortcut
+    %     * Function to add a "Add Plot" button to the plot list GUI
+    %  * Plot Context Menu
+    %     * uicontextmenu
+    %     * delete plot
+    %     * Reorder plot
+    %  * Tab Bar
+    %     * "Add Tab" tab with a "+" label to create a new tab
+    %  * Tab Context Menu
+    %     * change tab name using inputdlg function
+    %     * delete tab
+    %     * Reorder tab
+    %     
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com
     % Curtisma.org
@@ -304,8 +320,9 @@ classdef tfigure < hgsetget
             end
             % Reposition plot buttons
             for i_tab = 1:length(obj.tabs)
-                plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
-                                'Style','togglebutton');
+%                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
+%                                 'Style','togglebutton');
+                plots = get(get(obj.tabs(i_tab),'UserData'),'Children');
                 for n = 1:length(plots)
                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
                 end

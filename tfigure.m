@@ -30,6 +30,7 @@ classdef tfigure < hgsetget
     %  * Add a uicontextmenu for editing plots and tabs when the user right
     %   clicks on them.  This would allow the user to change the name, etc.
     %  * Add ability to change tab names using inputdlg function
+    %
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com
     % Curtisma.org
@@ -157,6 +158,7 @@ classdef tfigure < hgsetget
             c.UserData = h;
             h.UIContextMenu = c;
             mItem_name = uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
+            mItem_delete = uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             h.UserData.fa = axes('Parent',tab,'Units','pixels',...
 ...%                              'position',axesSize,...
                              'ActivePositionProperty','OuterPosition');
@@ -312,7 +314,7 @@ classdef tfigure < hgsetget
             end
             
         end
-        function selectPlot(obj,src,c) % ~ is obj and callbackdata          
+        function selectPlot(obj,src,~) % ~ is obj and callbackdata          
             if(length(src.Children) > 1)
                 visible_plot = findobj(src.Parent.Children(2:end),'Visible','on');
                 for i = 1:length(visible_plot)
@@ -334,7 +336,6 @@ classdef tfigure < hgsetget
 %                 for i = 1:length(src.Children)
 %                     src.Children(i).UserData.fa.Visible = 'off';
 %                 end
-
             else
                 axesSize = [50 50 obj.figureSize(3)-90 obj.figureSize(4)-110];
                 src.SelectedObject.UserData.fa.Position = axesSize;

@@ -14,7 +14,7 @@ close all;
 h = tfigure;
 
 %% The first tab will contain a single plot
-h.addPlot(h.tabs,'title','Linear');
+h.addPlot(h.tabs,[],'title','Linear');
 plot(1:10,1:10);
 title('Linear Test Plot');
 xlabel('index');
@@ -40,22 +40,38 @@ h.addPlot(h.tabs(4),@() plot(1:5,1:5));
 h.addPlot(h.tabs(4),@() plot(1:20,1:20),'title','Linear 10');
 h.addPlot(h.tabs(4),@() plot(1:10,rand(1,10)),'title','Random');
 
-%% Add a Summary tab as the first tab 
+%% Add a Control tab as the first tab 
 % The summary tab is still a work in progress and currently just creates a
 % blank tab
-h.addSummary;
+tab1 = h.addTab('ctrl','order',1);
+h.addCtrl(tab1,@(x) ctrlExample(tab1));
 
 %% Plotting functions
 % Plotting routines called when a graph with its function handle is
 % selected
 % Using a plotting function allows the plot to include formatting functions
 % such as titles and labels.
-    function plotExample()
-    % plotExample Plots a series of 10 random numbers.  Also includes a
-    %  title and labels the x and y axis.
-        plot(1:10,rand(1,10));
-        title('Random Plot');
-        xlabel('Arbitrary Index');
-        ylabel('Random Number');
-    end
+function plotExample()
+% plotExample Plots a series of 10 random numbers.  Also includes a
+%  title and labels the x and y axis.
+    plot(1:10,rand(1,10));
+    title('Random Plot');
+    xlabel('Arbitrary Index');
+    ylabel('Random Number');
+end
+%% Control functions
+function ctrlExample(tab,varargin)
+% ctrlExample makes a panel where inputs and options can be selected.
+    figSize = tab.Parent.Parent.Position;
+    ch = uicontrol('parent',tab,...
+                  'Style', 'edit',...
+                  'String',pwd,'Units','pixels',...
+                  'Position', [100 figSize(4)-85 200 20],...
+                  'tag','ctrl');
+    bh = uicontrol('parent',tab,...
+                  'Style', 'pushbutton',...
+                  'String','Select Data','Units','pixels',...
+                  'Position', [320 figSize(4)-85 40 20],...
+                  'tag','ctrl');
+end
 end

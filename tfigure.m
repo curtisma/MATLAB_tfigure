@@ -1,5 +1,5 @@
 classdef tfigure < hgsetget
-    %TFIGURE A figure for holding tabbed groups of plots
+    % TFIGURE A figure for holding tabbed groups of plots
     %   Creates a tabbed plot figure.  This allows the user to setup tabs
     %    to group plots.  Each tab contains a list of plots that can be
     %    selected using buttons on the left of the figure.
@@ -16,21 +16,43 @@ classdef tfigure < hgsetget
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
-    %  addSummary - Adds a summary
+    %  savePPT - Saves all plots to a Power Point presentation.
     %
     % Examples:
-    %  <matlab:tfigure_example> tfigure example
+    %  tFigExample - tfigure example
     %
     % TO DO:
-    %  * Finish Summary Slide functionality
-    %  * Add "save all plots" functionality to the summary slide
-    %     * ppt, pictures, figures
-    %  * Add support for using a ppt template
+    %  * Single Plot Resizing Issue
     %  * Add tables as an option for displaying data
+<<<<<<< HEAD
     %  * Add a uicontextmenu for editing plots and tabs when the user right
     %   clicks on them.  This would allow the user to change the name, etc.
     %  * Add ability to change tab names using inputdlg function
     %
+=======
+    %  * Export Menu Development
+    %     * ppt, pictures, figures, copy image to clipboard
+    %     * Add support for using a ppt template
+    %  * Control View
+    %     * Ability to add a button to the plot list to select a control
+    %     panel view in that tab.
+    %  * Plot List
+    %     * Be able to add text Labels to group plots
+    %     * Be able to move plots up or down using mouse or a keyboard
+    %     shortcut
+    %     * Function to add a "Add Plot" button to the plot list GUI
+    %  * Plot Context Menu
+    %     * uicontextmenu
+    %     * delete plot
+    %     * Reorder plot
+    %  * Tab Bar
+    %     * "Add Tab" tab with a "+" label to create a new tab
+    %  * Tab Context Menu
+    %     * change tab name using inputdlg function
+    %     * delete tab
+    %     * Reorder tab
+    %     
+>>>>>>> origin/master
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com
     % Curtisma.org
@@ -65,6 +87,8 @@ classdef tfigure < hgsetget
             obj.menu = uimenu(obj.fig,'Label','Export');
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
             obj.fig.Visible = 'on';
+%             h_add = obj.addTab('+');
+%             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
         end
         function out = get.figureSize(obj)
             out = get(obj.fig,'position');
@@ -72,11 +96,52 @@ classdef tfigure < hgsetget
         function set.figureSize(obj,val)
             set(obj.fig,'position',val);
         end
-        function h = addSummary(obj)
-            h = uitab('Parent', obj.tabGroup, 'Title', 'Summary');
-            obj.tabs(2:end+1) = obj.tabs(1:end);
-            obj.tabs(1) = h;
-            obj.tabGroup.Children = obj.tabGroup.Children([end 1:end-1]);
+        function h = addCtrl(obj,varargin)
+        % addCtrl([tab],[fun_handle],'title',[title]) Adds a plot to the given tab.  
+        %  When the button is selected the plotting routine given by
+        %  fun_handle is ran.
+        %  
+            p=inputParser;
+            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addOptional('fun_handle',[],@(x) isa(x,'function_handle'));
+            p.addParameter('title','Options',@ischar)
+            p.parse(varargin{:})
+            
+            % Select the tab
+            tab = p.Results.tab;
+            if(ischar(tab))
+                tab_obj = findobj(tab,'Type','tab');
+                if(isempty(tab_obj))
+                    obj.addTab(tab)
+                else
+                    tab = tab_obj;
+                end
+            end
+            % Add the new plot to the plot list
+            figSize = obj.figureSize;
+            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
+            numPlots = length(findobj(plotList,'tag','plot','-and',...
+                                      'Style','togglebutton'));
+            h = uicontrol('parent',plotList,...
+                          'Style', 'togglebutton',...
+                          'String', p.Results.title,'Units','pixels',...
+                          'Position', [10 figSize(4)-85-30*numPlots 120 20],...
+                          'tag','ctrl');
+            % Setup right click menu
+            c = uicontextmenu;
+            c.UserData = h;
+            h.UIContextMenu = c;
+            mItem_name = uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
+%             h.UserData.fa = axes('Parent',tab,'Units','pixels',...
+% ...%                              'position',axesSize,...
+%                              'ActivePositionProperty','OuterPosition');
+%             h.UserData.fa.Visible = 'on';             
+            if(~isempty(p.Results.fun_handle))
+                h.UserData.fh = p.Results.fun_handle;
+                p.Results.fun_handle();
+            end
+            plotList.SelectedObject = h;
+            obj.selectPlot(plotList,[]);
         end
         function h = addTab(obj,varargin)
         % addTab([title]) Adds a new tab with the given title.
@@ -88,7 +153,7 @@ classdef tfigure < hgsetget
             addOptional(p,'titleIn',...
                         ['dataset ' num2str(length(obj.tabs)+1)],@isstr);
             p.addParameter('order',[], ...
-                             @(x) isnumeric(x) && (x > 1) && ... 
+                             @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
             parse(p,varargin{:});
             order = p.Results.order;
@@ -123,13 +188,13 @@ classdef tfigure < hgsetget
             end
         end
         function h = addPlot(obj,varargin)
-        % addPlot(tab,[fun_handle],[title]) Adds a plot to the given tab.  
+        % addPlot([tab],[fun_handle],'title',[title]) Adds a plot to the given tab.  
         %  When the button is selected the plotting routine given by
         %  fun_handle is ran.
         %  
             p=inputParser;
             p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addOptional('fun_handle',[],@(x) isa(x,'function_handle'));
+            p.addOptional('fun_handle',[],@(x) (isa(x,'function_handle') || isempty(x)));
             p.addParameter('title','plot',@ischar)
             p.parse(varargin{:})
             
@@ -306,8 +371,9 @@ classdef tfigure < hgsetget
             end
             % Reposition plot buttons
             for i_tab = 1:length(obj.tabs)
-                plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
-                                'Style','togglebutton');
+%                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
+%                                 'Style','togglebutton');
+                plots = get(get(obj.tabs(i_tab),'UserData'),'Children');
                 for n = 1:length(plots)
                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
                 end

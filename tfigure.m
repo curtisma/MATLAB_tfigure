@@ -24,12 +24,7 @@ classdef tfigure < hgsetget
     % TO DO:
     %  * Single Plot Resizing Issue
     %  * Add tables as an option for displaying data
-<<<<<<< HEAD
-    %  * Add a uicontextmenu for editing plots and tabs when the user right
-    %   clicks on them.  This would allow the user to change the name, etc.
-    %  * Add ability to change tab names using inputdlg function
-    %
-=======
+
     %  * Export Menu Development
     %     * ppt, pictures, figures, copy image to clipboard
     %     * Add support for using a ppt template
@@ -52,7 +47,6 @@ classdef tfigure < hgsetget
     %     * delete tab
     %     * Reorder tab
     %     
->>>>>>> origin/master
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com
     % Curtisma.org

@@ -171,15 +171,10 @@ classdef tfigure < hgsetget
             c = uicontextmenu;
             c.UserData = h;
             h.UIContextMenu = c;
-<<<<<<< HEAD
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
             % Setup Axes
-=======
-            mItem_name = uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
-            mItem_delete = uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
->>>>>>> origin/master
             h.UserData.fa = axes('Parent',tab,'Units','pixels',...
 ...%                              'position',axesSize,...
                              'ActivePositionProperty','OuterPosition');
@@ -497,10 +492,7 @@ classdef tfigure < hgsetget
             
         end
         function selectPlot(obj,src,~) % ~ is obj and callbackdata          
-<<<<<<< HEAD
         % selectPlot Runs whenever a plot is selected from the plot list
-=======
->>>>>>> origin/master
             if(length(src.Children) > 1)
                 visible_plot = findobj(src.Parent.Children,'Visible','on');
                 for i = 1:length(visible_plot)

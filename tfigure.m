@@ -230,9 +230,12 @@ classdef tfigure < hgsetget
             end
         end
         function h = addCtrl(obj,varargin)
-        % addCtrl([tab],[fun_handle],'title',[title]) Adds a plot to the given tab.  
-        %  When the button is selected the plotting routine given by
-        %  fun_handle is ran.
+        % addCtrl([tab],[fun_handle(h_panel)],'title',[title]) Adds a control item to the given tab.  
+        %  When the button is selected the control panel given by
+        %  fun_handle is displayed.
+        % 
+        % fun_handle has a single input that is a handle to the panel that
+        % will contain the control panel.
         %  
             p=inputParser;
             p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
@@ -244,7 +247,7 @@ classdef tfigure < hgsetget
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
             
-            % Add the new plot to the plot list
+            % Add the new control panel to the plot list
             figSize = obj.figureSize;
             plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             h = uicontrol('parent',plotList,...
@@ -255,7 +258,7 @@ classdef tfigure < hgsetget
             h_panel = uipanel('Parent',tab,...
                               'Units','pixels',...
                               'Position',[30 30  figSize(3)-30 figSize(4)-30],...
-                              'Title','Data Selection');
+                              'Title',p.Results.title);
             h.UserData.fa = h_panel;
             
             % Setup Context Menu

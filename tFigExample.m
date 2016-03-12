@@ -45,8 +45,6 @@ ht = h.addTable(h.tabs(4),'title','Table');
 ht.ColumnName = {'X-Data', 'Y-Data', 'Z-Data'};
 ht.Data = rand(3);
 %% Add a Control tab as the first tab 
-% The summary tab is still a work in progress and currently just creates a
-% blank tab
 tab1 = h.addTab('Control','order',1);
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Data Selection');
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Scripts');

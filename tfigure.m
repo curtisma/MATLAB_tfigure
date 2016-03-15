@@ -84,7 +84,11 @@ classdef tfigure < hgsetget
                              'SizeChangedFcn',@obj.figResize,...
                              'Interruptible','off'); 
             obj.tabGroup = uitabgroup('Parent', obj.fig);
-            obj.addTab;
+            if(nargin>0)
+                obj.addTab(varargin{1});
+            else
+                obj.addTab;
+            end
 %             obj.menu = uimenu(obj.fig,'Label','Tfigure');
             obj.menu = uimenu(obj.fig,'Label','Export');
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)

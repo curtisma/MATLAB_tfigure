@@ -1,5 +1,5 @@
 function h = tFigExample
-%tFigExample An example showing how to use tfigure.  
+%%tFigExample An example showing how to use tfigure.  
 % It makes a single tfigure with 2 tabs and several plots per tab.
 %
 % Author: Curtis Mayberry
@@ -64,7 +64,12 @@ function plotExample()
 end
 %% Control functions
 function ctrlExample(tab,h_panel,varargin)
-% ctrlExample makes a panel where inputs and options can be selected.
+%% ctrlExample 
+% Makes a panel where inputs and options can be selected.
+% 
+% Simple expample of an input control panel.
+%
+% See also: uicontrol, tfigure, tFigExample
     panSize = h_panel.Position;
     
     % Add Path text box

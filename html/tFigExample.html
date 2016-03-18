@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tFigExample</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-12"><meta name="DC.source" content="tFigExample.m"><style type="text/css">
+      --><title>tFigExample</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-17"><meta name="DC.source" content="tFigExample.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Start a new tfigure</a></li><li><a href="#4">The first tab will contain a single plot</a></li><li><a href="#5">Create the second tab</a></li><li><a href="#6">Create the Third tab</a></li><li><a href="#7">Create the Fourth tab</a></li><li><a href="#8">Add a Control tab as the first tab</a></li><li><a href="#9">Plotting functions</a></li><li><a href="#10">Control functions</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> h = tFigExample
-</pre><pre class="codeinput"><span class="comment">%tFigExample An example showing how to use tfigure.</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Start a new tfigure</a></li><li><a href="#4">The first tab will contain a single plot</a></li><li><a href="#5">Create the second tab</a></li><li><a href="#6">Create the Third tab</a></li><li><a href="#7">Create the Fourth tab</a></li><li><a href="#8">Add a Control tab as the first tab</a></li><li><a href="#9">Plotting functions</a></li><li><a href="#10">Control functions</a></li><li><a href="#11">ctrlExample</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> h = tFigExample
+</pre><pre class="codeinput"><span class="comment">%%tFigExample An example showing how to use tfigure.</span>
 <span class="comment">% It makes a single tfigure with 2 tabs and several plots per tab.</span>
 <span class="comment">%</span>
 <span class="comment">% Author: Curtis Mayberry</span>
@@ -77,19 +77,19 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">% see also: tfigure</span>
 close <span class="string">all</span>;
 </pre><h2>Start a new tfigure<a name="3"></a></h2><p>Creates a new tfigure and defines the first tab's plots</p><pre class="codeinput">h = tfigure;
-</pre><img vspace="5" hspace="5" src="tFigExample_01.png" alt=""> <h2>The first tab will contain a single plot<a name="4"></a></h2><pre class="codeinput">h.addPlot(h.tabs,<span class="string">'title'</span>,<span class="string">'Linear'</span>);
+</pre><h2>The first tab will contain a single plot<a name="4"></a></h2><pre class="codeinput">h.addPlot(h.tabs,<span class="string">'title'</span>,<span class="string">'Linear'</span>);
 plot(1:10,1:10);
 title(<span class="string">'Linear Test Plot'</span>);
 xlabel(<span class="string">'index'</span>);
 ylabel(<span class="string">'Linear Plot'</span>);
-</pre><img vspace="5" hspace="5" src="tFigExample_02.png" alt=""> <h2>Create the second tab<a name="5"></a></h2><p>It will contain a single plot and utilize a function handle to plot</p><pre class="codeinput">h_tab = h.addTab;
+</pre><h2>Create the second tab<a name="5"></a></h2><p>It will contain a single plot and utilize a function handle to plot</p><pre class="codeinput">h_tab = h.addTab;
 h_tab.Title = <span class="string">'Exponential'</span>;
 h.addPlot(h.tabs(2),<span class="string">'plotFcn'</span>,@() plot(1:20,exp(1:20)),<span class="string">'title'</span>,<span class="string">'Linear FH'</span>);
-</pre><img vspace="5" hspace="5" src="tFigExample_03.png" alt=""> <h2>Create the Third tab<a name="6"></a></h2><p>It will contain 2 plots.  The first plot will be created using the plotting routine plotExample.</p><pre class="codeinput">h.addTab(<span class="string">'Random Tab'</span>);
+</pre><h2>Create the Third tab<a name="6"></a></h2><p>It will contain 2 plots.  The first plot will be created using the plotting routine plotExample.</p><pre class="codeinput">h.addTab(<span class="string">'Random Tab'</span>);
 h.addPlot(h.tabs(3),<span class="string">'plotFcn'</span>,@plotExample,<span class="string">'title'</span>,<span class="string">'Random'</span>); <span class="comment">% The plotExample plotting routine is defined below.</span>
 h.addPlot(h.tabs(3));
 plot(1:10,rand(1,10));
-</pre><img vspace="5" hspace="5" src="tFigExample_04.png" alt=""> <h2>Create the Fourth tab<a name="7"></a></h2><p>The Fourth tab will have the title Test Tab and contain 3 plots.</p><pre class="codeinput">h.addTab(<span class="string">'Test Tab'</span>);
+</pre><h2>Create the Fourth tab<a name="7"></a></h2><p>The Fourth tab will have the title Test Tab and contain 3 plots.</p><pre class="codeinput">h.addTab(<span class="string">'Test Tab'</span>);
 h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:5,1:5));
 h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:20,1:20),<span class="string">'title'</span>,<span class="string">'Linear 10'</span>);
 h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:10,rand(1,10)),<span class="string">'title'</span>,<span class="string">'Random'</span>);
@@ -97,10 +97,10 @@ h.addLabel(<span class="string">'Tables'</span>);
 ht = h.addTable(h.tabs(4),<span class="string">'title'</span>,<span class="string">'Table'</span>);
 ht.ColumnName = {<span class="string">'X-Data'</span>, <span class="string">'Y-Data'</span>, <span class="string">'Z-Data'</span>};
 ht.Data = rand(3);
-</pre><img vspace="5" hspace="5" src="tFigExample_05.png" alt=""> <h2>Add a Control tab as the first tab<a name="8"></a></h2><pre class="codeinput">tab1 = h.addTab(<span class="string">'Control'</span>,<span class="string">'order'</span>,1);
+</pre><h2>Add a Control tab as the first tab<a name="8"></a></h2><pre class="codeinput">tab1 = h.addTab(<span class="string">'Control'</span>,<span class="string">'order'</span>,1);
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<span class="string">'Data Selection'</span>);
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<span class="string">'Scripts'</span>);
-</pre><img vspace="5" hspace="5" src="tFigExample_06.png" alt=""> <h2>Plotting functions<a name="9"></a></h2><p>Plotting routines called when a graph with its function handle is selected Using a plotting function allows the plot to include formatting functions such as titles and labels.</p><pre class="codeinput"><span class="keyword">function</span> plotExample()
+</pre><h2>Plotting functions<a name="9"></a></h2><p>Plotting routines called when a graph with its function handle is selected Using a plotting function allows the plot to include formatting functions such as titles and labels.</p><pre class="codeinput"><span class="keyword">function</span> plotExample()
 <span class="comment">% plotExample Plots a series of 10 random numbers.  Also includes a</span>
 <span class="comment">%  title and labels the x and y axis.</span>
     plot(1:10,rand(1,10));
@@ -109,8 +109,7 @@ h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<spa
     ylabel(<span class="string">'Random Number'</span>);
 <span class="keyword">end</span>
 </pre><h2>Control functions<a name="10"></a></h2><pre class="codeinput"><span class="keyword">function</span> ctrlExample(tab,h_panel,varargin)
-<span class="comment">% ctrlExample makes a panel where inputs and options can be selected.</span>
-    panSize = h_panel.Position;
+</pre><h2>ctrlExample<a name="11"></a></h2><p>Makes a panel where inputs and options can be selected.</p><p>Simple expample of an input control panel.</p><p>See also: uicontrol, tfigure, tFigExample</p><pre class="codeinput">    panSize = h_panel.Position;
 
     <span class="comment">% Add Path text box</span>
     ch = uicontrol(<span class="string">'Parent'</span>,h_panel,<span class="keyword">...</span>
@@ -125,22 +124,12 @@ h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<spa
                   <span class="string">'Position'</span>,[0.75 0.8 0.2 0.1],<span class="keyword">...</span><span class="comment">[230 figSize(4)-85 40 20],...</span>
                   <span class="string">'tag'</span>,<span class="string">'ctrl'</span>,<span class="keyword">...</span>
                   <span class="string">'Callback'</span>,@(x,y) uigetfile(<span class="string">'.csv'</span>,<span class="string">'Choose a data file'</span>,ch.String));
-<span class="keyword">end</span>
 </pre><pre class="codeinput"><span class="keyword">end</span>
-</pre><pre class="codeoutput">
-ans = 
-
-  tfigure with properties:
-
-           fig: [1x1 Figure]
-          tabs: [4.0006 6.1035e-04 1.0006 2.0006 3.0006]
-          menu: [1x1 Menu]
-    figureSize: [680 558 560 420]
-
+</pre><pre class="codeinput"><span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 function h = tFigExample
-%tFigExample An example showing how to use tfigure.  
+%%tFigExample An example showing how to use tfigure.  
 % It makes a single tfigure with 2 tabs and several plots per tab.
 %
 % Author: Curtis Mayberry
@@ -205,7 +194,12 @@ function plotExample()
 end
 %% Control functions
 function ctrlExample(tab,h_panel,varargin)
-% ctrlExample makes a panel where inputs and options can be selected.
+%% ctrlExample 
+% Makes a panel where inputs and options can be selected.
+% 
+% Simple expample of an input control panel.
+%
+% See also: uicontrol, tfigure, tFigExample
     panSize = h_panel.Position;
     
     % Add Path text box

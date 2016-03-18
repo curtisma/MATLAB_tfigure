@@ -275,6 +275,7 @@ classdef tfigure < hgsetget
             h_panel = uipanel('Parent',tab,...
                               'Units','pixels',...
                               'Position',[30 30  figSize(3)-30 figSize(4)-30],...
+                              'tag','ctrl',...
                               'Title',p.Results.title);
             h.UserData.fa = h_panel;
             
@@ -477,10 +478,16 @@ classdef tfigure < hgsetget
                 plotListAdj = [0 0 0 0];
             end
 
-            %Resize Current Axes
+            %Resize Current "Axes"
+            if(strcmp(get(currAxes,'tag'),'ctrl')) % Resize ctrl panels
+                set(currAxes,'Units','pixels','Position',[180 10  figSize(3)-195 figSize(4)-45]...
+                                                   - [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
+                                                   + plotListAdj); % Plot list adjustment
+            else % Resize Axes
             set(currAxes,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110]...
                                                    - [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
                                                    + plotListAdj); % Plot list adjustment
+            end
             % Resize the plot list
             plots = currTab.UserData.Children;
             for n = 1:length(plots)

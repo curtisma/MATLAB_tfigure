@@ -18,6 +18,7 @@ classdef tfigure < hgsetget
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
+    %  addLabel - Adds a label to the plot list
     %  savePPT - Saves all plots to a Power Point presentation.
     %
     % Examples:
@@ -85,7 +86,7 @@ classdef tfigure < hgsetget
                              'Interruptible','off'); 
             obj.tabGroup = uitabgroup('Parent', obj.fig);
             if(nargin>0)
-                obj.addTab(varargin{1});
+                obj.addTab(varargin{:});
             else
                 obj.addTab;
             end
@@ -115,6 +116,7 @@ classdef tfigure < hgsetget
             p.addParameter('order',[], ...
                              @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
+            p.addParameter('listName','Plots', @ischar)
             parse(p,varargin{:});
             order = p.Results.order;
             
@@ -144,11 +146,12 @@ classdef tfigure < hgsetget
             
             % Setup plot list
             figSize = obj.figureSize;
-            plotList = uibuttongroup('parent',h,'Title','Plots',...
+            plotList = uibuttongroup('parent',h,...
                             'Units','pixels',...
                             'Position',[10 10  150 figSize(4)-45],...
                             'tag','plotList',...
                             'SelectionChangedFcn',@obj.selectPlot);
+            set(plotList,'Title',p.Results.listName);
             h.UserData = plotList;
             if(length(plotList.Children) <= 1)
                 plotList.Visible = 'off';
@@ -421,12 +424,19 @@ classdef tfigure < hgsetget
                              'HorizontalAlignment','center',...
                              'VerticalAlignment','middle','FontSize',48);
                 for plotNum = 1:length(hp)
+                    if(isa(hp(plotNum).UserData,'function_handle'))
                     h = figure('Position',obj.fig.Position,...
                                'Color',[1 1 1],'Visible','off');
                     hp(plotNum).UserData();
+                    else
+                        h = hp(plotNum).UserData.fa.Parent.Parent.Parent
+%                         h = h.fa;
+                    end
                     exportToPPTX('addslide');
                     exportToPPTX('addpicture',h,'Scaled','maxfixed');
-                    close(h);
+                    if(isa(hp(plotNum).UserData,'function_handle'))
+                        close(h);
+                    end
                 end
             end
             exportToPPTX('save',fileName);

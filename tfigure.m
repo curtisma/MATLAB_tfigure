@@ -110,14 +110,25 @@ classdef tfigure < hgsetget
         % USAGE:
         %  tfig.addTab(title);
         %
-            p = inputParser;
-            addOptional(p,'titleIn',...
+
+            if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+                p = inputParser;
+                addOptional(p,'titleIn',...
                         ['dataset ' num2str(length(obj.tabs)+1)],@isstr);
-            p.addParameter('order',[], ...
+                p.addParameter('order',[], ...
                              @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
-            p.addParameter('listName','Plots', @ischar)
-            parse(p,varargin{:});
+                p.addParameter('listName','Plots', @ischar)
+                parse(p,varargin{:});
+            else
+                % When called from the menu there is automatically 2
+                % inputs, the menu and the eventData
+                p.Results.titleIn = ['dataset ' num2str(length(obj.tabs)+1)];
+                p.Results.order = [];
+                p.Results.listName = 'Plots';
+                
+            end
+            
             order = p.Results.order;
             
             % Setup tab
@@ -141,7 +152,10 @@ classdef tfigure < hgsetget
             c = uicontextmenu;
             c.UserData = h;
             h.UIContextMenu = c;
-            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
+            uimenu(c,'Label','Add Tab','Callback',@obj.addTab);
+            uimenu(c,'Label','Add Plot','Callback',@obj.addPlot);
+            uimenu(c,'Label','Add Table','Callback',@obj.addTable);
+            uimenu(c,'Label','Rename','Callback',@obj.renameDlg,'Separator','on');
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
             % Setup plot list
@@ -152,6 +166,14 @@ classdef tfigure < hgsetget
                             'tag','plotList',...
                             'SelectionChangedFcn',@obj.selectPlot);
             set(plotList,'Title',p.Results.listName);
+            
+            % Menu
+            plotList.UIContextMenu = uicontextmenu;
+            plotList.UIContextMenu.UserData = plotList;
+            uimenu(plotList.UIContextMenu,'Label','Add Plot','Callback',@obj.addPlot);
+            uimenu(plotList.UIContextMenu,'Label','Add Table','Callback',@obj.addTable);
+            uimenu(plotList.UIContextMenu,'Label','Add Label','Callback',@obj.addLabel);
+            uimenu(plotList.UIContextMenu,'Label','Rename','Callback',@obj.renameDlg,'Separator','on');
             h.UserData = plotList;
             if(length(plotList.Children) <= 1)
                 plotList.Visible = 'off';
@@ -165,13 +187,19 @@ classdef tfigure < hgsetget
         %  When the button is selected the plotting routine given by
         %  plotFcn is ran.
         %  
+        if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;
             p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
             p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
             p.addParameter('title','plot',@ischar)
             p.addParameter('order',[],@isnumeric);
             p.parse(varargin{:})
-            
+        else
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.plotFcn = [];
+            p.Results.title = 'plot';
+            p.Results.order = [];
+        end
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
             
@@ -210,18 +238,87 @@ classdef tfigure < hgsetget
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
         end
-        function h = addLabel(obj,title,varargin)
+        function varargout = addTable(obj,varargin)
+        %% addTable 
+        % Adds a table to the given tab.
+        %
+        % h.addTable([tab])
+        %
+        %
+        if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+            p=inputParser;
+            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addParameter('title','table',@ischar)
+            p.addParameter('order',[],@isnumeric);
+            p.parse(varargin{:})
+        else
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.title = 'table';
+            p.Results.order = [];
+        end
+            % Select the Tab
+            tab = obj.parseTab(p.Results.tab);
+            
+            % Add the new plot to the plot list
+            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
+            h = uicontrol('parent',plotList,...
+                            'Style', 'togglebutton',...
+                            'String', p.Results.title,'Units','pixels',...
+                            'tag','table');
+%             h.UserData = p.Results.fun_handle;
+            
+            % Setup Context Menu
+            c = uicontextmenu;
+            c.UserData = h;
+            h.UIContextMenu = c;
+            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
+            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
+            
+            % Setup Table
+            h.UserData.fa = uitable('Parent',tab,'Units','pixels');
+            h.UserData.fa.Visible = 'on';   
+            
+            % Setup order
+            order = p.Results.order;
+            if(isempty(order) || (order == length(obj.tabGroup.Children)))
+                plotList.Children = plotList.Children([2:end 1]);
+            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
+                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
+            end
+            
+            plotList.SelectedObject = h;
+            obj.selectPlot(plotList,[]);
+            
+            % Setup outputs
+            if(nargout == 0)
+                varargout = {};
+            elseif(nargout == 1)
+                varargout = {h.UserData.fa};
+            elseif(nargout == 2)
+                varargout = {h.UserData.fa h};
+            else
+                error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
+            end
+        end
+        function h = addLabel(obj,varargin)
         %% addLabel Adds a label to the plot list
         %
         % USAGE:
         %  h.addLabel(title,[tab],...)
         %  
-            p=inputParser;
-            p.addRequired('title',@ischar);
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
-            p.addParameter('order',[],@isnumeric);
-            p.parse(title,varargin{:})
+            if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+                p=inputParser;
+                p.addRequired('title',@ischar);
+                p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+                p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
+                p.addParameter('order',[],@isnumeric);
+                p.parse(varargin{:})
+            else
+                p.Results.title = inputdlg('Label:','Label',1,{''});
+                p.Results.tab = obj.tabGroup.SelectedTab;
+                p.Results.plotFcn = [];
+                p.Results.order = [];
+            end
             
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
@@ -247,6 +344,8 @@ classdef tfigure < hgsetget
             elseif((order > 1) && (order < length(obj.tabGroup.Children)))
                 plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
             end
+            
+            obj.selectPlot(plotList,[]);
         end
         function h = addCtrl(obj,varargin)
         %% addCtrl([tab],[fun_handle(h_panel)],'title',[title]) 
@@ -308,63 +407,6 @@ classdef tfigure < hgsetget
             end
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
-        end
-        function varargout = addTable(obj,varargin)
-        %% addTable 
-        % Adds a table to the given tab.
-        %
-        % h.addTable([tab])
-        %
-        %
-            p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addParameter('title','plot',@ischar)
-            p.addParameter('order',[],@isnumeric);
-            p.parse(varargin{:})
-            
-            % Select the Tab
-            tab = obj.parseTab(p.Results.tab);
-            
-            % Add the new plot to the plot list
-            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
-            h = uicontrol('parent',plotList,...
-                            'Style', 'togglebutton',...
-                            'String', p.Results.title,'Units','pixels',...
-                            'tag','table');
-%             h.UserData = p.Results.fun_handle;
-            
-            % Setup Context Menu
-            c = uicontextmenu;
-            c.UserData = h;
-            h.UIContextMenu = c;
-            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
-            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
-            
-            % Setup Table
-            h.UserData.fa = uitable('Parent',tab,'Units','pixels');
-            h.UserData.fa.Visible = 'on';   
-            
-            % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
-            
-            plotList.SelectedObject = h;
-            obj.selectPlot(plotList,[]);
-            
-            % Setup outputs
-            if(nargout == 0)
-                varargout = {};
-            elseif(nargout == 1)
-                varargout = {h.UserData.fa};
-            elseif(nargout == 2)
-                varargout = {h.UserData.fa h};
-            else
-                error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
-            end
         end
         function savePPT(obj,varargin)
         %% savePPT 
@@ -604,6 +646,11 @@ classdef tfigure < hgsetget
                 newName = inputdlg('New Name:','Rename',1,prevName);
                 menu.Parent.UserData.String = newName{1};
             elseif(strcmpi(type, 'uitab'))
+                prevName = {menu.Parent.UserData.Title};
+                % Get new name from the user
+                newName = inputdlg('New Name:','Rename',1,prevName);
+                menu.Parent.UserData.Title = newName{1};
+            elseif(strcmpi(type, 'uibuttongroup'))
                 prevName = {menu.Parent.UserData.Title};
                 % Get new name from the user
                 newName = inputdlg('New Name:','Rename',1,prevName);

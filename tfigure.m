@@ -620,9 +620,9 @@ classdef tfigure < hgsetget
         % parseTab - parses a tab input, creating a new tab if the tab
         %  input is a tab name that doesn't exist.
             if(ischar(tab))
-                tab_obj = findobj(tab,'Type','tab');
+                tab_obj = findobj(obj.tabs,'Type','tab');
                 if(isempty(tab_obj))
-                    obj.addTab(tab)
+                    tab_out = obj.addTab(tab);
                 else
                     tab_out = tab_obj;
                 end

@@ -26,6 +26,7 @@ classdef tfigure < hgsetget
     %
     % TO DO:
     %
+    % * Add Support for subplots
     % * Export Menu
     %  * ppt, pictures, figures, copy image to clipboard
     %  * Add support for using a ppt template

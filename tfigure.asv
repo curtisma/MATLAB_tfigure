@@ -28,7 +28,7 @@ classdef tfigure < hgsetget
     %
     % * Make each item in the plot list a panel
     %  * Adds Support for subplots
-    %  * Fixes the legend issue in a simpler way
+    %  * Fixes the legend issue
     % * Export Menu
     %  * ppt, pictures, figures, copy image to clipboard
     %  * Add support for using a ppt template
@@ -187,7 +187,8 @@ classdef tfigure < hgsetget
         function h = addPlot(obj,varargin)
         %% addPlot([tab],'title',[title],'plotFcn',[function_handle]) 
         % Adds a plot to the given tab.  
-        %  When the plot button is selected the plot is selected
+        %  When the button is selected the plotting routine given by
+        %  plotFcn is ran.
         %  
         if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;

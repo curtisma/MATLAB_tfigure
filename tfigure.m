@@ -66,6 +66,8 @@ classdef tfigure < hgsetget
     end
     properties (Dependent)
         figureSize % Current size of the figure containing tfigure
+        gct % Get Current Tab
+        gcp % Get Current Panel
     end
     properties (Access = private)
         tabGroup
@@ -184,7 +186,7 @@ classdef tfigure < hgsetget
             % Make the new tab current
             obj.tabGroup.SelectedTab = h;
         end
-        function h = addPlot(obj,varargin)
+        function ha = addPlot(obj,varargin)
         %% addPlot([tab],'title',[title],'plotFcn',[function_handle]) 
         % Adds a plot to the given tab.  
         %  When the plot button is selected the plot is selected
@@ -219,11 +221,15 @@ classdef tfigure < hgsetget
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
+            % Setup Panel
+            h.UserData.hp = uipanel('Parent',tab,'Units','pixels',...
+                                    'tag','plot','BorderType','none');
+            h.UserData.hp.UserData.hc = h;
+
             % Setup Axes
-            h.UserData.fa = axes('Parent',tab,'Units','pixels',...
-...%                              'position',axesSize,...
-                             'ActivePositionProperty','OuterPosition');
-            h.UserData.fa.Visible = 'on';
+            ha = axes(h.UserData.hp);%,...'Units','pixels',...
+%                              'ActivePositionProperty','OuterPosition');
+            ha.Visible = 'on';
             
             % Setup order
             order = p.Results.order;
@@ -241,7 +247,7 @@ classdef tfigure < hgsetget
             obj.selectPlot(plotList,[]);
         end
         function varargout = addTable(obj,varargin)
-        %% addTable 
+        %% addTable
         % Adds a table to the given tab.
         %
         % h.addTable([tab])
@@ -276,9 +282,15 @@ classdef tfigure < hgsetget
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
+            % Setup Panel
+            h.UserData.hp = uipanel('Parent',tab,'Units','pixels',...
+                                    'tag','plot','BorderType','none');
+            h.UserData.hp.UserData.hc = h;
+            
             % Setup Table
-            h.UserData.fa = uitable('Parent',tab,'Units','pixels');
-            h.UserData.fa.Visible = 'on';   
+%             h.UserData.fa = uitable('Parent',h.UserData.hp,'Units','pixels');
+            ht = uitable('Parent',h.UserData.hp,'Units','normalized','Position',[0 0 1 1]);%,'Units','pixels');
+%             h.UserData.fa.Visible = 'on';   
             
             % Setup order
             order = p.Results.order;
@@ -295,9 +307,9 @@ classdef tfigure < hgsetget
             if(nargout == 0)
                 varargout = {};
             elseif(nargout == 1)
-                varargout = {h.UserData.fa};
+                varargout = {ht};
             elseif(nargout == 2)
-                varargout = {h.UserData.fa h};
+                varargout = {ht h};
             else
                 error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
             end
@@ -381,7 +393,7 @@ classdef tfigure < hgsetget
                               'Position',[30 30  figSize(3)-30 figSize(4)-30],...
                               'tag','ctrl',...
                               'Title',p.Results.title);
-            h.UserData.fa = h_panel;
+            h.UserData.hp = h_panel;
             
             % Setup Context Menu
             c = uicontextmenu;
@@ -486,6 +498,20 @@ classdef tfigure < hgsetget
             exportToPPTX('save',fileName);
             exportToPPTX('close');
         end
+        function h = get.gct(obj)
+        % gct Get Current Tab
+        %  Returns the handle to the current tab
+        h = obj.tabGroup.SelectedTab;
+        end
+        function h = get.gcp(obj)
+        % gcp Get Current Panel
+        %  Returns the handle to the current tab
+            if(~isempty(obj.gct.UserData.SelectedObject))
+                h = obj.gct.UserData.SelectedObject.UserData.hp;
+            else
+                h = [];
+            end
+        end
     end
     methods (Access = private)
         function figResize(obj,src,~) % callbackdata is unused 3rd arg.
@@ -503,28 +529,13 @@ classdef tfigure < hgsetget
 %             obj.figureSize = figSize;
             
             % Find selected tab and plot
-            currTab = obj.tabGroup.SelectedTab;
-            if(~isempty(currTab.UserData.SelectedObject))
-                currPlot = currTab.UserData.SelectedObject;
-                currAxes = currPlot.UserData.fa;
-                numPlots = length(currTab.UserData.Children);
+%             currTab = obj.tabGroup.SelectedTab;
+            if(~isempty(obj.gct.UserData.SelectedObject))
+                numPlots = length(obj.gct.UserData.Children);
             else
-                %currPlot = [];
-                currAxes = [];
                 numPlots = 0;
             end
             
-            % Resize current axes
-            leg_pos = [0 0 0 0];
-            if(~isempty(currAxes) && strcmp(currAxes.Type,'axes'))
-                % Legend Adjustment
-                l = legend;
-                if(~isempty(l))
-                    l.Units = 'pixels';
-                    leg_pos = l.Position;
-                    set(currAxes,'ActivePositionProperty','OuterPosition');
-                end
-            end
             % Plot list adjustment
             if(numPlots==1)
                 plotListAdj = [-160 0 150 0];
@@ -533,17 +544,17 @@ classdef tfigure < hgsetget
             end
 
             %Resize Current "Axes"
-            if(strcmp(get(currAxes,'tag'),'ctrl')) % Resize ctrl panels
-                set(currAxes,'Units','pixels','Position',[180 10  figSize(3)-195 figSize(4)-45]...
-                                                   - [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
+            if(strcmp(get(obj.gcp,'tag'),'ctrl')) % Resize ctrl panels
+                set(obj.gcp,'Units','pixels','Position',[170 10  figSize(3)-185 figSize(4)-45]...
+                                                   ...%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
                                                    + plotListAdj); % Plot list adjustment
             else % Resize Axes
-            set(currAxes,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110]...
-                                                   - [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
+            set(obj.gcp,'Units','pixels','Position',[170 10  figSize(3)-185 figSize(4)-45]...
+                                                   ...%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
                                                    + plotListAdj); % Plot list adjustment
             end
             % Resize the plot list
-            plots = currTab.UserData.Children;
+            plots = obj.gct.UserData.Children;
             for n = 1:length(plots)
                 set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
             end
@@ -576,43 +587,16 @@ classdef tfigure < hgsetget
 %             end
             
         end
-        function selectPlot(obj,src,~) % ~ is obj and callbackdata          
+        function selectPlot(obj,src,~) % ~ is callbackdata          
         % selectPlot Runs whenever a plot is selected from the plot list
             if(length(src.Children) > 1)
-                visible_plot = findobj(src.Parent.Children,'Visible','on');
-                for i = 1:length(visible_plot)
-                    visible_plot(i).Visible = 'off';
-                end
-                src.SelectedObject.UserData.fa.Visible = 'on';
-                % Turn on plotted material 
-                material = src.SelectedObject.UserData.fa.Children;
-                if(~isempty(material))
-                    for i = 1:length(material)
-                        material(i).Visible = 'on';
-                    end
-                end
-                set(src.Children,'Visible','on');
+                h_panels = [src.Children.UserData];
+                h_panels = [h_panels.hp];
+                set(h_panels,'visible','off')
+
+                src.SelectedObject.UserData.hp.Visible = 'on';
                 src.Visible = 'on';
-%                 for i = 1:length(src.Children)
-%                       src.Children.
-%                     src.Children(i).UserData.fa.Visible = 'off';
-%                 end
-            else
-%                 axesSize = [50 50 obj.figureSize(3)-90 obj.figureSize(4)-110];
-%                 src.SelectedObject.UserData.fa.Position = axesSize;
             end
-%             if isa(src.SelectedObject.UserData, 'function_handle')
-%                 axes(findobj(src.Parent,'Type','Axes'));
-%                 src.SelectedObject.UserData(); % contains the plot function handle
-%             elseif(isa(src.SelectedObject.UserData,'matlab.graphics.axis.Axes'))
-%                 % Turn off current axes
-%                 h_current = axes(findobj(src.Parent,'Type','Axes','-and',...
-%                                          'Visible','on'));
-%                 h_current.Visible = 'off';
-%                 h_current.children.Visible = 'off';
-%                 % Turn on new axes
-% %                 h_new = 
-%             end
             obj.figResize(obj.fig);
         end
         function selectTab(obj,~,~)

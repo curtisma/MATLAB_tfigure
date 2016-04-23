@@ -52,8 +52,7 @@ tab1 = h.addTab('Control','order',1);
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Data Selection');
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Scripts');
 
-%% Create the fifth tab
-% Tests subplots
+%% Create the Fifth
 h.addTab('Test Subplot');
 h.addPlot(h.gct,'title','subplot 2x1')
 subplot(2,1,1);

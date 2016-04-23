@@ -632,13 +632,20 @@ classdef tfigure < hgsetget
                 if(~isempty(newName))
                     menu.Parent.UserData.String = newName{1};
                 end
-            elseif(any(strcmpi(type, {'uitab','uibuttongroup'})))
+            elseif(strcmpi(type, 'uitab'))
                 prevName = {menu.Parent.UserData.Title};
                 % Get new name from the user
                 newName = inputdlg('New Name:','Rename',1,prevName);
                 if(~isempty(newName))
                     menu.Parent.UserData.Title = newName{1};
                 end
+            elseif(strcmpi(type, 'uibuttongroup'))
+                prevName = {menu.Parent.UserData.Title};
+                % Get new name from the user
+                newName = inputdlg('New Name:','Rename',1,prevName);
+                if(~isempty(newName))
+                menu.Parent.UserData.Title = newName{1};
+                END
             else
                 error('tfigure:renameDlg:unknownSelectionType',...
                       'unknown selection type, need to add ui type to be renamed to the callback function');

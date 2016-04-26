@@ -26,26 +26,8 @@ classdef tfigure < hgsetget
     %
     % TO DO:
     %
-    % * Export Menu
-    %  * ppt, pictures, figures, copy image to clipboard
-    %  * Add support for using a ppt template
-    % * Control View
-    %   * Ability to add a button to the plot list to select a control
-    %    panel view in that tab.
-    % * Plot List
-    %    * Be able to move plots up or down using mouse or a keyboard
-    %    shortcut
-    %    * Function to add a "Add Plot" button to the plot list GUI
-    % * Plot Context Menu
-    %    * uicontextmenu
-    %    * delete plot
-    %    * Reorder plot
-    % * Tab Bar
-    %    * "Add Tab" tab with a "+" label to create a new tab
-    % * Tab Context Menu
-    %    * change tab name using inputdlg function
-    %    * delete tab
-    %    * Reorder tab
+    % See issues in Github:
+    % <https://github.com/curtisma/MATLAB_tfigure/issues>
     %    
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com

@@ -39,10 +39,11 @@ classdef tfigure < hgsetget
     % Class properties
     properties
         fig % Handle to the figure that displays tfigure.
-        tabs % Handles to each of the tfigure's tabs
+%         tabs % Handles to each of the tfigure's tabs
         menu % Tfigure menu
     end
     properties (Dependent)
+        tabs % Handles to each of the tfigure's tabs
         figureSize % Current size of the figure containing tfigure
         gct % Get Current Tab
         gcp % Get Current Panel
@@ -120,10 +121,10 @@ classdef tfigure < hgsetget
             
             % Setup tab order
             if(isempty(order))
-                obj.tabs(end+1) = h;
+%                 obj.tabs(end+1) = h;
             else
-                obj.tabs((order+1):end+1) = obj.tabs(order:end);
-                obj.tabs(order) = h;
+%                 obj.tabs((order+1):end+1) = obj.tabs(order:end);
+%                 obj.tabs(order) = h;
                 if(order == 1)
                     obj.tabGroup.Children = obj.tabGroup.Children([end 1:end-1]);
                 elseif((order > 1) && (order < length(obj.tabGroup.Children)))
@@ -493,6 +494,9 @@ classdef tfigure < hgsetget
                 h = [];
             end
         end
+        function t = get.tabs(obj)
+            t = obj.tabGroup.Children;
+        end
     end
     methods (Access = private)
         function figResize(obj,src,~) % callbackdata is unused 3rd arg.
@@ -630,7 +634,18 @@ classdef tfigure < hgsetget
         % deleteDlg function for deleting tabs and plots.  Double checks
         % with the user if a plot already exists.
         %  menu
-%         delete();
+%         h = warndlg(['The tab "'
+%             h_dlg = warndlg({'The following tab will be deleted:'; menu.Parent.UserData.Title}, 'Delete Tab Warning','modal');
+%             choice = questdlg({'The following tab will be deleted:'; menu.Parent.UserData.Title},'Delete Warning','OK','cancel','cancel')
+%             switch choice
+%                 case 'OK'
+            delete(menu.Parent.UserData);
+%             end
+            
+%             x =0;
+%             if(isvalid(h_dlg))
+%                 delete(menu.Parent.UserData);
+%             end
 %             type = get(menu.Parent.UserData,'Type');
 %             if(strcmpi(type,'uicontrol'))
 %                 

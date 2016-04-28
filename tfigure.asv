@@ -428,9 +428,9 @@ classdef tfigure < hgsetget
             end
 
             % Copy the panel to a seperate figure and copy tp clipboard
-            hf = figure('Visible','off','Color','w');
-            hp = copy(p.Results.panel);
-            hp.Parent = hf;
+            hf = 
+            obj.exportToFigure(p.Results.panel);
+            hf.Color = 'w';
             hp.BackgroundColor = 'w';
             hp.Units = 'normalized';
             hp.Position = [0 0 1 1];
@@ -457,10 +457,8 @@ classdef tfigure < hgsetget
             else
                 error('Incorrect number of Inputs')
             end
-            h = figure;
+            h = figure('Visible','off');
             hp = copy(panel);
-            hp.Units = 'normalized';
-            hp.Position = [0 0 1 1];
             hp.Parent = h;
         end
         function savePPT(obj,varargin)

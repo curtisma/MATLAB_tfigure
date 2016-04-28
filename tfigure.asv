@@ -187,7 +187,7 @@ classdef tfigure < hgsetget
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
             
-            % Add the new plot to the plot list
+            % Add the new analysis panel to the plot list
             plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             h = uicontrol('parent',plotList,...
                           'Style', 'togglebutton',...
@@ -326,7 +326,7 @@ classdef tfigure < hgsetget
             plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             h = uicontrol('parent',plotList,...
                           'Style', 'text',...
-                          'String', p.Results.title{1},'Units','pixels',...
+                          'String', p.Results.title,'Units','pixels',...
                           'tag','label');
             
             % Setup Context Menu
@@ -428,9 +428,9 @@ classdef tfigure < hgsetget
             end
 
             % Copy the panel to a seperate figure and copy tp clipboard
-            hf = 
-            obj.exportToFigure(p.Results.panel);
-            hf.Color = 'w';
+            hf = figure('Visible','off','Color','w');
+            hp = copy(p.Results.panel);
+            hp.Parent = hf;
             hp.BackgroundColor = 'w';
             hp.Units = 'normalized';
             hp.Position = [0 0 1 1];
@@ -438,7 +438,7 @@ classdef tfigure < hgsetget
             print(hf,'-clipboard','-dbitmap')
             close(hf);
         end
-        function h = exportToFigure(obj,varargin)
+        function varargout = exportToFigure(obj,varargin)
         % exportToFigure Copies a panel to a new figure
         % 
         % USAGE:
@@ -449,17 +449,30 @@ classdef tfigure < hgsetget
         %  Copies panel (panel) to a new figure with handle hf
             if(nargin == 1)
                 panel = obj.gcp;
-            elseif(nargin == 2)
+            elseif(isa(varargin{1},'matlab.ui.container.Panel'))
                 panel = varargin{1};
-            elseif(nargin == 3)
+            elseif(nargin == 3 && isa(varargin{1},'matlab.ui.container.Menu'))
             % Callback
                 panel = varargin{1}.Parent.Parent.UserData.UserData.hp;
             else
-                error('Incorrect number of Inputs')
+                panel = obj.gcp;
             end
-            h = figure('Visible','off');
+            
+            if(nargin>2 && ~isa(varargin{1},'matlab.ui.container.Menu'))
+                h = figure(varargin{2:end});
+            else
+                h = figure;
+            end
             hp = copy(panel);
+            hp.Units = 'normalized';
+            hp.Position = [0 0 1 1];
             hp.Parent = h;
+            hp.Visible = 'on';
+            if(nargout == 1)
+                varargout{1} = h;
+            elseif(nargout == 2)
+                varargout = {h hp};
+            end
         end
         function savePPT(obj,varargin)
         %% savePPT 
@@ -492,7 +505,11 @@ classdef tfigure < hgsetget
             p.parse(varargin{:});
             if(isempty(p.Results.fileName))
                 [fileName,pathname] = uiputfile('.pptx','Export PPTX: select a file name');
-                fileName = fullfile(pathname,fileName);
+                if(fileName == 0)
+                    fileName = fullfile(pathname,fileName);
+                else
+                    return
+                end
             else
                 fileName = p.Results.fileName;
             end
@@ -518,22 +535,19 @@ classdef tfigure < hgsetget
 %             end
             for tabNum = 1:length(obj.tabs)
                 ht = obj.tabs(tabNum);
-                hp = findobj(ht.Children,'tag','plot');
+%                 hp = findobj(ht.Children,'tag','plot');
                 exportToPPTX('addslide');
                 exportToPPTX('addtext',ht.Title,...
                              'HorizontalAlignment','center',...
                              'VerticalAlignment','middle','FontSize',48);
-                panels = [ht.UserData.Children.UserData]
-                for plotNum = 1:length(hp)
-                   
-                        h = hp(plotNum).UserData.hc;
-                        h = h.fa;
-
+                panels = [ht.UserData.Children.UserData];
+                panels = [panels.hp];
+                for panelNum = 1:length(panels)
+                    [h hp] = obj.exportToFigure(panels(panelNum),'Visible','off');
+                    hp.BackgroundColor = 'w';
                     exportToPPTX('addslide');
                     exportToPPTX('addpicture',h,'Scaled','maxfixed');
-                    if(isa(hp(plotNum).UserData,'function_handle'))
-                        close(h);
-                    end
+                    close(h);
                 end
             end
             exportToPPTX('save',fileName);

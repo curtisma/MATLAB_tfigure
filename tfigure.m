@@ -77,6 +77,7 @@ classdef tfigure < hgsetget
 %             obj.menu = uimenu(obj.fig,'Label','Tfigure');
             obj.menu = uimenu(obj.fig,'Label','Export');
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
+            uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
             obj.fig.Visible = 'on';
 %             h_add = obj.addTab('+');
 %             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
@@ -199,7 +200,7 @@ classdef tfigure < hgsetget
             h.UIContextMenu = c;
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
-            
+            uimenu(c,'Label','Copy to Clipboard','Callback',@obj.exportToClipboard);
             % Setup Panel
             h.UserData.hp = uipanel('Parent',tab,'Units','pixels',...
                                     'tag','plot','BorderType','none');
@@ -404,12 +405,54 @@ classdef tfigure < hgsetget
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
         end
+        function export(obj,varargin)
+        % export Exports an analysis panel, a tab, or an entire tfigure using
+        % the specified format
+        end
+        function exportToClipboard(obj,varargin)
+        % exportToClipboard Exports 
+            if(nargin == 2)
+                p = inputParser;
+                p.addOptional('panel',obj.gcp,@(x) strcmp(x.Type,'uipanel'))
+                p.parse(varargin{:});
+            elseif(nargin == 3)
+                if(~isempty(varargin{1}.Parent.UserData) && strcmp(varargin{1}.Parent.UserData.Type,'uicontrol'))
+                    p.Results.panel = varargin{1}.Parent.UserData.UserData.hp;
+                else
+                    p.Results.panel = obj.gcp;
+                end
+            else
+                p.Results.panel = obj.gcp;
+            end
+
+            % Copy the panel to a seperate figure and copy tp clipboard
+            hf = figure('Visible','off','Color','w');
+            hp = copy(p.Results.panel);
+            hp.Parent = hf;
+            hp.BackgroundColor = 'w';
+            hp.Units = 'normalized';
+            hp.Position = [0 0 1 1];
+            hp.Visible = 'on';
+            print(hf,'-clipboard','-dbitmap')
+            close(hf);
+        end
+        function exportToFigure(obj)
+            hf = figure('Visible','off','Color','w');
+            hp = copy(p.Results.panel);
+            hp.Parent = hf;
+        end
         function savePPT(obj,varargin)
         %% savePPT 
         % Saves all the plots in tfigure to a powerpoint presentation.  
         % 
-        % h.savePPT
+        % h.savePPT(...)
+        %  Brings up a file selection dialog
+        % h.savePPT(fileName,...)
         %
+        % PARAMETERS:
+        %  title - Title of the presentation
+        %  subject - subject of presentation, included in file meta data
+        %  comments - comments on the presentation
             if(~(exist('exportToPPTX','file')))
                error('tfigure:NeedExportToPPTX',...
                      ['exportToPPTX must be added to the path. ',...
@@ -447,29 +490,25 @@ classdef tfigure < hgsetget
             exportToPPTX('addtext',p.Results.title,...
                          'HorizontalAlignment','center',...
                          'VerticalAlignment','middle','FontSize',48);
-            numTabs = length(obj.tabs);
-            summary = findobj(obj.tabs,'Title','Summary');
-            if(~isempty(summary))
-                startTab = 2;
-            else
-                startTab = 1;
-            end
-            for tabNum = startTab:numTabs
-                ht = get(obj.tabs(tabNum));
+%             summary = findobj(obj.tabs,'Title','Summary');
+%             if(~isempty(summary))
+%                 startTab = 2;
+%             else
+%                 startTab = 1;
+%             end
+            for tabNum = 1:length(obj.tabs)
+                ht = obj.tabs(tabNum);
                 hp = findobj(ht.Children,'tag','plot');
                 exportToPPTX('addslide');
                 exportToPPTX('addtext',ht.Title,...
                              'HorizontalAlignment','center',...
                              'VerticalAlignment','middle','FontSize',48);
+                panels = [ht.UserData.Children.UserData]
                 for plotNum = 1:length(hp)
-                    if(isa(hp(plotNum).UserData,'function_handle'))
-                    h = figure('Position',obj.fig.Position,...
-                               'Color',[1 1 1],'Visible','off');
-                    hp(plotNum).UserData();
-                    else
-                        h = hp(plotNum).UserData.fa.Parent.Parent.Parent
-%                         h = h.fa;
-                    end
+                   
+                        h = hp(plotNum).UserData.hc;
+                        h = h.fa;
+
                     exportToPPTX('addslide');
                     exportToPPTX('addpicture',h,'Scaled','maxfixed');
                     if(isa(hp(plotNum).UserData,'function_handle'))
@@ -578,14 +617,20 @@ classdef tfigure < hgsetget
                 h_panels = [src.Children.UserData];
                 h_panels = [h_panels.hp];
                 set(h_panels,'visible','off')
-
+                
                 src.SelectedObject.UserData.hp.Visible = 'on';
                 src.Visible = 'on';
+                if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))
+                    axes(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes'));
+                end
             end
             obj.figResize(obj.fig);
         end
-        function selectTab(obj,~,~)
+        function selectTab(obj,b,c)
             obj.figResize(obj.fig);
+            if(~isempty(findobj(obj.gcp.Children,'Type','axes')))
+                axes(findobj(obj.gcp.Children,'Type','axes'));
+            end
         end
         function tab_out = parseTab(obj,tab)
         % parseTab - parses a tab input, creating a new tab if the tab

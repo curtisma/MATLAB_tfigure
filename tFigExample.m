@@ -34,6 +34,8 @@ h.addTab('Random Tab');
 h.addPlot(h.tabs(3),'plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
 h.addPlot(h.tabs(3));
 plot(1:10,rand(1,10));
+h.addPlot(h.tabs(3),'title','Heart');
+x=(-2:.001:2); y=(sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01; plot(x,y);
 
 %% Create the Fourth tab
 % The Fourth tab will have the title Test Tab and contain 3 plots.
@@ -43,6 +45,8 @@ h.addPlot(h.tabs(4),'title','Linear 10');
 plot(1:20,1:20);
 h.addPlot(h.tabs(4),'title','Random');
 plot(1:10,rand(1,10));
+h.addPlot(h.tabs(4),'title','Wolf');
+spy
 h.addLabel('Tables');
 ht = h.addTable(h.tabs(4),'title','Table');
 ht.ColumnName = {'X-Data', 'Y-Data', 'Z-Data'};

@@ -236,7 +236,6 @@ classdef tfigure < hgsetget
         %
         % h.addTable([tab])
         %
-        %
         if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;
             p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))

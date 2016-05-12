@@ -14,43 +14,47 @@ close all;
 h = tfigure;
 
 %% The first tab will contain a single plot
-h.addPlot(h.tabs,'title','Linear');
-plot(1:10,1:10);
-title('Linear Test Plot');
-xlabel('index');
-ylabel('Linear Plot');
+h.addPlot(h.tabs,'title','Normal');
+y = -10:0.5:10;
+x = -10:0.5:10;
+[X, Y] = meshgrid(x, y);
+Z = sin(sqrt(X.^2+Y.^2)) ./ sqrt(X.^2+Y.^2); % Create the function values for Z = f(X,Y)
+surfc(X, Y, Z);
+view(-38, 18) % Adjust the view angle
+title('Normal Response')
+xlabel('x')
+ylabel('y')
+zlabel('z')
 
-%% Create the second tab 
+%% Create the second "Exponential" tab 
 % It will contain a single plot and utilize a function handle to plot
 h_tab = h.addTab;
 h_tab.Title = 'Exponential';
 h.addPlot(h.tabs(2),'title','Linear FH');
 plot(1:20,exp(1:20))
 
-%% Create the Third tab
+%% Create the Third "Random" tab
 % It will contain 2 plots.  The first plot will be created using the
 % plotting routine plotExample.
 h.addTab('Random Tab');
 h.addPlot(h.tabs(3),'plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
-h.addPlot(h.tabs(3));
-plot(1:10,rand(1,10));
-h.addPlot(h.tabs(3),'title','Heart');
-x=(-2:.001:2); y=(sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01; plot(x,y);
 
-%% Create the Fourth tab
-% The Fourth tab will have the title Test Tab and contain 3 plots.
-h.addTab('Test Tab');
-h.addPlot(h.tabs(4),'plotFcn',@() plot(1:5,1:5));
-h.addPlot(h.tabs(4),'title','Linear 10');
-plot(1:20,1:20);
-h.addPlot(h.tabs(4),'title','Random');
-plot(1:10,rand(1,10));
-h.addPlot(h.tabs(4),'title','Wolf');
+h.addPlot(h.tabs(3),'title','Heart');
+x=(-2:.001:2); y=real((sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01); plot(x,y);
+title('Love');
+xlabel('time (yrs)');
+ylabel('Feeling');
+
+h.addPlot(h.tabs(3),'title','Wolf');
 spy
+ 
+% Add a Label
 h.addLabel('Tables');
-ht = h.addTable(h.tabs(4),'title','Table');
+
+ht = h.addTable(h.tabs(3),'title','Table');
 ht.ColumnName = {'X-Data', 'Y-Data', 'Z-Data'};
 ht.Data = rand(3);
+
 %% Add a Control tab as the first tab 
 tab1 = h.addTab('Control','order',1);
 h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Data Selection');

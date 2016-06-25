@@ -14,7 +14,7 @@ close all;
 h = tfigure;
 
 %% The first tab will contain a single plot
-h.addPlot(h.tabs,'title','Normal');
+h.addPlot('Normal');
 y = -10:0.5:10;
 x = -10:0.5:10;
 [X, Y] = meshgrid(x, y);
@@ -30,22 +30,22 @@ zlabel('z')
 % It will contain a single plot and utilize a function handle to plot
 h_tab = h.addTab;
 h_tab.Title = 'Exponential';
-h.addPlot(h.tabs(2),'title','Linear FH');
+h.addPlot('Linear FH','tab',h.gct);
 plot(1:20,exp(1:20))
 
 %% Create the Third "Random" tab
 % It will contain 2 plots.  The first plot will be created using the
 % plotting routine plotExample.
 h.addTab('Random Tab');
-h.addPlot(h.tabs(3),'plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
+h.addPlot('Random','plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
 
-h.addPlot(h.tabs(3),'title','Heart');
+h.addPlot('Heart');
 x=(-2:.001:2); y=real((sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01); plot(x,y);
 title('Love');
 xlabel('time (yrs)');
 ylabel('Feeling');
 
-h.addPlot(h.tabs(3),'title','Wolf');
+h.addPlot('Wolf','tab',h.gct);
 spy
  
 % Add a Label
@@ -63,13 +63,13 @@ h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Scripts');
 %% Create the fifth tab
 % Tests subplots
 h.addTab('Test Subplot');
-h.addPlot(h.gct,'title','subplot 2x1')
+h.addPlot('subplot 2x1')
 subplot(2,1,1);
 plot(1:5);
 subplot(2,1,2);
 plot(2:6);
 
-h.addPlot(h.gct,'title','subplot 2x2');
+h.addPlot('subplot 2x2');
 subplotExample;
 
 %% Plotting functions

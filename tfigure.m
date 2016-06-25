@@ -13,12 +13,16 @@ classdef tfigure < hgsetget
     %  fig - Handle to the figure that displays tfigure.
     %  tabs - Handles to each of the tfigure's tabs
     %  figureSize - Current size of the figure containing tfigure
+    %  gct - get current tab
+    %  gcp - get current panel
     %
     % tfigure Methods:
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
+    %  addTable - Adds a table (uitable) to the plot list
     %  addLabel - Adds a label to the plot list
+    %  addCtrl - Adds a control panel to the plot list
     %  savePPT - Saves all plots to a Power Point presentation.
     %
     % Examples:
@@ -78,16 +82,17 @@ classdef tfigure < hgsetget
             obj.menu = uimenu(obj.fig,'Label','Export');
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
             uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
+            
+            htp = uitab('Parent', obj.tabGroup,'Title','+',...
+                        'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
+            
+            % Add '+' addTab button
+            
             obj.fig.Visible = 'on';
 %             h_add = obj.addTab('+');
 %             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
         end
-        function out = get.figureSize(obj)
-            out = get(obj.fig,'position');
-        end
-        function set.figureSize(obj,val)
-            set(obj.fig,'position',val);
-        end
+
         function h = addTab(obj,varargin)
         %% addTab([title]) 
         % Adds a new tab with the given title.
@@ -95,8 +100,15 @@ classdef tfigure < hgsetget
         % USAGE:
         %  tfig.addTab(title);
         %
-
-            if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+            if(~isempty(varargin) && (isa(varargin{1},'matlab.ui.container.Menu') || isa(varargin{1},'matlab.ui.container.Tab')))
+            % Menu Call or '+' Tab call
+            % When called from the menu there is automatically 2
+            % inputs, the menu and the eventData
+                p.Results.titleIn = ['dataset ' num2str(length(obj.tabs)+1)];
+                p.Results.order = [];
+                p.Results.listName = 'Plots';
+            else
+            % User Call
                 p = inputParser;
                 addOptional(p,'titleIn',...
                         ['dataset ' num2str(length(obj.tabs)+1)],@isstr);
@@ -105,12 +117,6 @@ classdef tfigure < hgsetget
                              (x <= (length(obj.tabs)+1)))
                 p.addParameter('listName','Plots', @ischar)
                 parse(p,varargin{:});
-            else
-                % When called from the menu there is automatically 2
-                % inputs, the menu and the eventData
-                p.Results.titleIn = ['dataset ' num2str(length(obj.tabs)+1)];
-                p.Results.order = [];
-                p.Results.listName = 'Plots';
                 
             end
             
@@ -121,12 +127,10 @@ classdef tfigure < hgsetget
                       'Title', p.Results.titleIn,'ButtonDownFcn',@obj.selectTab);
             
             % Setup tab order
-            if(isempty(order))
-%                 obj.tabs(end+1) = h;
-            else
-%                 obj.tabs((order+1):end+1) = obj.tabs(order:end);
-%                 obj.tabs(order) = h;
-                if(order == 1)
+            if(isempty(order) && length(obj.tabGroup.Children)>1)
+                obj.tabGroup.Children = obj.tabGroup.Children([1:end-2 end end-1]);
+            elseif(~isempty(order))
+                if(order <= 1)
                     obj.tabGroup.Children = obj.tabGroup.Children([end 1:end-1]);
                 elseif((order > 1) && (order < length(obj.tabGroup.Children)))
                     obj.tabGroup.Children = obj.tabGroup.Children([1:(order-1) end (order):end-1]);
@@ -141,7 +145,7 @@ classdef tfigure < hgsetget
             uimenu(c,'Label','Add Plot','Callback',@obj.addPlot);
             uimenu(c,'Label','Add Table','Callback',@obj.addTable);
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg,'Separator','on');
-            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
+            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg,'UserData',h);
             
             % Setup plot list
             figSize = obj.figureSize;
@@ -167,15 +171,25 @@ classdef tfigure < hgsetget
             obj.tabGroup.SelectedTab = h;
         end
         function ha = addPlot(obj,varargin)
-        %% addPlot([tab],'title',[title],'plotFcn',[function_handle]) 
+        %% addPlot([title],'tab',[h_tab],'plotFcn',[function_handle]) 
         % Adds a plot to the given tab.  
         %  When the plot button is selected the plot is selected
         %  
+        % INPUTS
+        %  title - (optional) Uses this string as the plot title displayed 
+        %   in the plot list
+        % PARAMETERS
+        %  tab - A handle to the tab to contain the plot
+        %  plotFcn - A function handle to be evaluated when the plot is
+        %   selected.
+        % 
+        % see also: tfigure, tfigure.tfigure, tfigure.addTab,
+        % tfigure.addTable
         if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addOptional('title','plot',@ischar)
             p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
-            p.addParameter('title','plot',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
             p.addParameter('order',[],@isnumeric);
             p.parse(varargin{:})
         else
@@ -552,6 +566,12 @@ classdef tfigure < hgsetget
             exportToPPTX('save',fileName);
             exportToPPTX('close');
         end
+        function out = get.figureSize(obj)
+            out = get(obj.fig,'position');
+        end
+        function set.figureSize(obj,val)
+            set(obj.fig,'position',val);
+        end
         function h = get.gct(obj)
         % gct Get Current Tab
         %  Returns the handle to the current tab
@@ -567,7 +587,7 @@ classdef tfigure < hgsetget
             end
         end
         function t = get.tabs(obj)
-            t = obj.tabGroup.Children;
+            t = obj.tabGroup.Children(1:end-1);
         end
     end
     methods (Access = private)
@@ -619,30 +639,7 @@ classdef tfigure < hgsetget
             % Resize each list of plots
             plotLists = findobj(src,'tag','plotList','-and',...
                                 'Type','uibuttongroup');
-            set(plotLists,'Units','pixels','Position',[10 10  150 figSize(4)-45])
-%             % Resize each axis
-%             axesList = findobj(src,'Type','axes');
-%             if(~isempty(axesList))
-%                 l = legend;
-%                 if(~isempty(l))
-%                     l.Units = 'pixels';
-%                     leg_pos = l.Position;
-%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110] - [0 0 ceil(leg_pos(3)) 0],'ActivePositionProperty','OuterPosition');
-%                 else
-%                     % TO DO: Add support for single plot tabs
-%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110],'ActivePositionProperty','OuterPosition');
-%                 end
-%             end
-%             % Reposition plot buttons
-%             for i_tab = 1:length(obj.tabs)
-% %                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
-% %                                 'Style','togglebutton');
-%                 plots = get(get(obj.tabs(i_tab),'UserData'),'Children');
-%                 for n = 1:length(plots)
-%                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
-%                 end
-%             end
-            
+            set(plotLists,'Units','pixels','Position',[10 10  150 figSize(4)-45]);
         end
         function selectPlot(obj,src,~) % ~ is callbackdata          
         % selectPlot Runs whenever a plot is selected from the plot list
@@ -668,9 +665,10 @@ classdef tfigure < hgsetget
         end
         function tab_out = parseTab(obj,tab)
         % parseTab - parses a tab input, creating a new tab if the tab
-        %  input is a tab name that doesn't exist.
+        %  input is a tab name that doesn't exist.  Can accept a handle or
+        %  a string input of the tab name.
             if(ischar(tab))
-                tab_obj = findobj(obj.tabs,'Type','tab');
+                tab_obj = findobj(obj.tabs,'Type','uitab','Title',tab);
                 if(isempty(tab_obj))
                     tab_out = obj.addTab(tab);
                 else
@@ -681,7 +679,8 @@ classdef tfigure < hgsetget
             end
         end
         function exportMenu(obj,menu,~)
-        % Export menu
+        % Export menu callback
+        %  Executes the requested depending on the selected export option
             if(strcmp(menu.Label,'Export PPT'))
                 obj.savePPT();
             end
@@ -709,7 +708,7 @@ classdef tfigure < hgsetget
                       'unknown selection type, need to add ui type to be renamed to the callback function');
             end
         end
-        function deleteDlg(~,menu,~)
+        function deleteDlg(~,menu,ActionData)
         % deleteDlg function for deleting tabs and plots.  Double checks
         % with the user if a plot already exists.
         %  menu
@@ -718,7 +717,13 @@ classdef tfigure < hgsetget
 %             choice = questdlg({'The following tab will be deleted:'; menu.Parent.UserData.Title},'Delete Warning','OK','cancel','cancel')
 %             switch choice
 %                 case 'OK'
+%             if(find(menu.UserData.Parent.Children == menu.UserData)  == length(menu.UserData.Parent.Children)-1)
+%                 selectPrevTabFcn = menu.UserData.Parent.Children(end-2).ButtonDownFcn;
+%             else
+%                 selectPrevTabFcn = @(x)(1);
+%             end
             delete(menu.Parent.UserData);
+%             selectPrevTabFcn();
 %             end
             
 %             x =0;

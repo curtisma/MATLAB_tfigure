@@ -92,7 +92,6 @@ classdef tfigure < hgsetget
 %             h_add = obj.addTab('+');
 %             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
         end
-
         function h = addTab(obj,varargin)
         %% addTab([title]) 
         % Adds a new tab with the given title.
@@ -311,6 +310,11 @@ classdef tfigure < hgsetget
             else
                 error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
             end
+        end
+        function h = addTableJava(obj,varargin)
+        % https://www.mathworks.com/matlabcentral/fileexchange/14225-java-based-data-table
+        %
+        %
         end
         function h = addLabel(obj,varargin)
         %% addLabel Adds a label to the plot list
@@ -708,7 +712,7 @@ classdef tfigure < hgsetget
                       'unknown selection type, need to add ui type to be renamed to the callback function');
             end
         end
-        function deleteDlg(~,menu,ActionData)
+        function deleteDlg(obj,menu,~)
         % deleteDlg function for deleting tabs and plots.  Double checks
         % with the user if a plot already exists.
         %  menu
@@ -723,6 +727,9 @@ classdef tfigure < hgsetget
 %                 selectPrevTabFcn = @(x)(1);
 %             end
             delete(menu.Parent.UserData);
+            if(length(obj.gct.Parent.Children)>1 && find(obj.gct == obj.gct.Parent.Children) == length(obj.gct.Parent.Children))
+                obj.gct.Parent.SelectedTab = obj.gct.Parent.Children(end-1);
+            end
 %             selectPrevTabFcn();
 %             end
             

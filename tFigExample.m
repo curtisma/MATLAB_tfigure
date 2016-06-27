@@ -6,7 +6,7 @@ function h = tFigExample
 % Curtisma3@gmail.com
 % Curtisma.org
 %
-% see also: tfigure
+% see also: tfigure, tfigure.tfigure
 close all;
 
 %% Start a new tfigure
@@ -21,17 +21,17 @@ x = -10:0.5:10;
 Z = sin(sqrt(X.^2+Y.^2)) ./ sqrt(X.^2+Y.^2); % Create the function values for Z = f(X,Y)
 surfc(X, Y, Z);
 view(-38, 18) % Adjust the view angle
-title('Normal Response')
-xlabel('x')
-ylabel('y')
-zlabel('z')
+title('Normal Response');
+xlabel('x');
+ylabel('y');
+zlabel('z');
 
 %% Create the second "Exponential" tab 
 % It will contain a single plot and utilize a function handle to plot
 h_tab = h.addTab;
 h_tab.Title = 'Exponential';
 h.addPlot('Linear FH','tab',h.gct);
-plot(1:20,exp(1:20))
+plot(1:20,exp(1:20));
 
 %% Create the Third "Random" tab
 % It will contain 2 plots.  The first plot will be created using the
@@ -46,24 +46,24 @@ xlabel('time (yrs)');
 ylabel('Feeling');
 
 h.addPlot('Wolf','tab',h.gct);
-spy
+spy;
  
 % Add a Label
 h.addLabel('Tables');
 
-ht = h.addTable(h.tabs(3),'title','Table');
+ht = h.addTable('Table');
 ht.ColumnName = {'X-Data', 'Y-Data', 'Z-Data'};
 ht.Data = rand(3);
 
 %% Add a Control tab as the first tab 
 tab1 = h.addTab('Control','order',1);
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Data Selection');
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Scripts');
+h.addCtrl('Data Selection',@(x) ctrlExample(tab1,x),'tab',tab1);
+h.addCtrl('Scripts',@(x) ctrlExample(tab1,x),'tab',tab1);
 
 %% Create the fifth tab
 % Tests subplots
 h.addTab('Test Subplot');
-h.addPlot('subplot 2x1')
+h.addPlot('subplot 2x1');
 subplot(2,1,1);
 plot(1:5);
 subplot(2,1,2);

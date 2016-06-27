@@ -5,9 +5,9 @@ classdef tfigure < hgsetget
     % to group plots.  Each tab contains a list of plots that can be
     % selected using buttons on the left of the figure.
     %    
-    %   Example
-    %    h = tfigure;
-    %    h = tfigure('Tab_title');
+    % Example
+    %  h = tfigure;
+    %  h = tfigure('Tab_title');
     %
     % tfigure Properties:
     %  fig - Handle to the figure that displays tfigure.
@@ -20,7 +20,7 @@ classdef tfigure < hgsetget
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
-    %  addTable - Adds a table (uitable) to the plot list
+    %  addTable - Adds a table to the plot list
     %  addLabel - Adds a label to the plot list
     %  addCtrl - Adds a control panel to the plot list
     %  savePPT - Saves all plots to a Power Point presentation.
@@ -28,7 +28,10 @@ classdef tfigure < hgsetget
     % Examples:
     %  tFigExample - tfigure example
     %
-    % TO DO:
+    % SETUP:
+    %  Files that can be downloaded from the MATLAB file exchange
+    %  exportToPPTX - Required to export to a pptx presentation
+    %   <https://www.mathworks.com/matlabcentral/fileexchange/40277-exporttopptx>
     %
     % See issues in Github:
     % <https://github.com/curtisma/MATLAB_tfigure/issues>
@@ -37,7 +40,7 @@ classdef tfigure < hgsetget
     % Curtisma3@gmail.com
     % Curtisma.org
     %
-    % See Also: tFigExample
+    % See Also: tFigExample, tfigure.tfigure
     
     %% *Properties*
     % Class properties
@@ -64,9 +67,16 @@ classdef tfigure < hgsetget
         %  function.  Plots can be added to each tab by using the addPlot
         %  function.
         %
-        % INPUTS
-        %  title_tab1 - The title of the first tab to be added. (optional)
+        %  h = tfigure;
+        %   Creates a tfigure object
+        %  h2 = tfigure('Data Tab #1');
+        %   Creates a tfigure object with "Data Tab #1" as the tab title.
         %
+        % INPUTS
+        %  title_tab1 - (optional) The title of the first tab to be added.
+        % OUTPUTS
+        %  h - a tfigure object
+        % 
         % see also: tFigExample
         %
         	obj.fig = figure('Visible','off',...
@@ -83,8 +93,8 @@ classdef tfigure < hgsetget
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
             uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
             
-            htp = uitab('Parent', obj.tabGroup,'Title','+',...
-                        'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
+            uitab('Parent', obj.tabGroup,'Title','+',...
+                  'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
             
             % Add '+' addTab button
             
@@ -93,12 +103,22 @@ classdef tfigure < hgsetget
 %             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
         end
         function h = addTab(obj,varargin)
-        %% addTab([title]) 
+        %% addTab
         % Adds a new tab with the given title.
         %
-        % USAGE:
-        %  tfig.addTab(title);
+        %  ht = h.addTab([title],'Param','ParamValue',...);
         %
+        % INPUTS
+        %  title - (optional) name of the tab
+        % PARAMETERS
+        %  order - Specifies the tab order
+        %  listName - The plot list title listed at the top
+        %   Defaults to 'Plots'
+        % OUTPUTS
+        %  ht - uitab handle of the added tab
+        %
+        % See also: tfigure, tfigure.tfigure, tfigure.addPlot,
+        % tfigure.addTable
             if(~isempty(varargin) && (isa(varargin{1},'matlab.ui.container.Menu') || isa(varargin{1},'matlab.ui.container.Tab')))
             % Menu Call or '+' Tab call
             % When called from the menu there is automatically 2
@@ -170,17 +190,25 @@ classdef tfigure < hgsetget
             obj.tabGroup.SelectedTab = h;
         end
         function ha = addPlot(obj,varargin)
-        %% addPlot([title],'tab',[h_tab],'plotFcn',[function_handle]) 
+        %% addPlot 
         % Adds a plot to the given tab.  
         %  When the plot button is selected the plot is selected
-        %  
+        %
+        % ha = h.addPlot([title],'tab',[h_tab],'plotFcn',[function_handle])
+        %
         % INPUTS
         %  title - (optional) Uses this string as the plot title displayed 
         %   in the plot list
         % PARAMETERS
-        %  tab - A handle to the tab to contain the plot
+        %  tab - Selects which tab will contain the table.  The tab can be
+        %   specified as a uitab handle or the name of the tab
         %  plotFcn - A function handle to be evaluated when the plot is
         %   selected.
+        % OUTPUTS
+        %  ha - Handle to the plot axis
+        % EXAMPLE
+        %  h = tfigure;
+        %  ha = h.addPlot('Plot Title');
         % 
         % see also: tfigure, tfigure.tfigure, tfigure.addTab,
         % tfigure.addTable
@@ -227,12 +255,7 @@ classdef tfigure < hgsetget
             ha.Visible = 'on';
             
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
             
             if(~isempty(p.Results.plotFcn))
                 h.UserData.fh = p.Results.plotFcn;
@@ -247,18 +270,35 @@ classdef tfigure < hgsetget
         %% addTable
         % Adds a table to the given tab.
         %
-        % h.addTable([tab])
+        % ht = h.addTable([title],'Param','ParamValue',...)
         %
+        % INPUTS
+        %  title - (optional) The table title to displayed on the selection
+        %   button
+        % PARAMETERS
+        %  tab - Selects which tab will contain the table.  The tab can be
+        %   specified as a uitab handle or the name of the tab
+        %  order - Position in the plot list
+        %  style - Selects between the default MATLAB table and a Java
+        %   table. uitable: 'uitable or 'ui'  Java Table: 'Java',
+        %   'JavaTable'
+        % OUTPUTS
+        %  ht - handle to the table
+        %
+        % See also: tfigure.addPlot tfigure.addLabel tfigure.addCtrl
         if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addParameter('title','table',@ischar)
+            p.addOptional('title','table',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
             p.addParameter('order',[],@isnumeric);
+            p.addParameter('style','uitable',...
+                @(x) any(validatestring(x,{'uitable','ui','JavaTable','Java'})))
             p.parse(varargin{:})
         else
             p.Results.tab = obj.tabGroup.SelectedTab;
             p.Results.title = 'table';
             p.Results.order = [];
+            p.Results.style = 'uitable';
         end
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
@@ -285,17 +325,21 @@ classdef tfigure < hgsetget
             h.UserData.fh = [];
             
             % Setup Table
-%             h.UserData.fa = uitable('Parent',h.UserData.hp,'Units','pixels');
-            ht = uitable('Parent',h.UserData.hp,'Units','normalized','Position',[0 0 1 1]);%,'Units','pixels');
-%             h.UserData.fa.Visible = 'on';   
+            if(strcmpi(p.Results.style,'uitable') || strcmpi(p.Results.style,'ui'))
+                ht = uitable('Parent',h.UserData.hp,'Units','normalized','Position',[0 0 1 1]);%,'Units','pixels');
+            elseif(strcmpi(p.Results.style,'JavaTable') || strcmpi(p.Results.style,'java'))
+                if(~(exist('exportToPPTX','file')))
+                    error('tfigure:NeedExportToPPTX',...
+                         ['createTable must be added to the path. ',...
+                        'It can be downloaded from the MATLAB file exchange, search for "Java-based data table"']);
+                end
+                ht = uiextras.jTable.Table('Parent',h.UserData.hp);
+            end
+            %             h.UserData.fa.Visible = 'on';   
+            h.UserData.hp.UserData.hc = ht;
             
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
             
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
@@ -311,28 +355,32 @@ classdef tfigure < hgsetget
                 error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
             end
         end
-        function h = addTableJava(obj,varargin)
-        % https://www.mathworks.com/matlabcentral/fileexchange/14225-java-based-data-table
-        %
-        %
-        end
         function h = addLabel(obj,varargin)
         %% addLabel Adds a label to the plot list
         %
-        % USAGE:
-        %  h.addLabel(title,[tab],...)
+        %  hl = h.addLabel(title,[tab],...)
         %  
+        % INPUTS
+        %  title - text to display
+        % PARAMETERS
+        %  title - text to display
+        %  order - Position in the plot list
+        %  tab - Selects which tab will contain the table.  The tab can be 
+        %   specified as a uitab handle or the name of the tab 
+        % OUTPUTS
+        %  hl - label handle
+        %
+        % see also: tfigure, tfigure.tfigure, tfigure.addTab,
+        % tfigure.addTable
             if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
                 p=inputParser;
                 p.addRequired('title',@ischar);
-                p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-                p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
+                p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
                 p.addParameter('order',[],@isnumeric);
                 p.parse(varargin{:})
             else
                 p.Results.title = inputdlg('Label:','Label',1,{''});
                 p.Results.tab = obj.tabGroup.SelectedTab;
-                p.Results.plotFcn = [];
                 p.Results.order = [];
             end
             
@@ -354,30 +402,36 @@ classdef tfigure < hgsetget
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
             
             obj.selectPlot(plotList,[]);
         end
         function h = addCtrl(obj,varargin)
-        %% addCtrl([tab],[fun_handle(h_panel)],'title',[title]) 
-        % Adds a control item to the given tab.  
-        % When the button is selected the control panel given by
-        % fun_handle is displayed.
-        % 
-        % fun_handle has a single input that is a handle to the panel that
-        % will contain the control panel.
-        %  
+        %% addCtrl
+        % Adds a control panel to a tab
+        %  Requires a fun_handle which points to the control panel function
+        %  which defines its contents
+        %
+        %  hp = h.addCtrl([title],[fun_handle(h_panel)],'Param','value') 
+        % INPUTS
+        %  title - (optional) text of the control's plot list button
+        %  fun_handle - (optional) A function that defines the control panel.  It has 
+        %   a single input that is a handle to the panel that will contain 
+        %   the control panel.
+        % PARAMETERS
+        %  order - Position in the plot list
+        %  tab - Selects which tab will contain the table.  The tab can be 
+        %   specified as a uitab handle or the name of the tab 
+        % OUTPUTS
+        %   hp - handle for the control panel's plot list button
+        %
+        % See also: tfigure, tfigure.tfigure
             p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addOptional('title','Options',@ischar);
             p.addOptional('fun_handle',[],@(x) isa(x,'function_handle'));
-            p.addParameter('title','Options',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
             p.addParameter('order',[],@isnumeric);
-            p.parse(varargin{:})
+            p.parse(varargin{:});
             
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
@@ -409,13 +463,7 @@ classdef tfigure < hgsetget
 %             h.UserData.fa.Visible = 'on';           
 
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
-
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
 
             if(~isempty(p.Results.fun_handle))
                 h.UserData.fh = p.Results.fun_handle;
@@ -424,12 +472,24 @@ classdef tfigure < hgsetget
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
         end
-        function export(obj,varargin)
+        %function export(obj,varargin)
         % export Exports an analysis panel, a tab, or an entire tfigure using
         % the specified format
-        end
+        %
+        % Not currently implemented
+        %end
         function exportToClipboard(obj,varargin)
-        % exportToClipboard Exports 
+        %% exportToClipboard 
+        % Exports a panel to the clipboard as if it it were in its own 
+        % figure
+        %
+        % obj.exportToClipboard([panel]
+        %
+        % INPUTS
+        %  panel - (optional) a panel handle to be exported
+        %   Uses the current panel (obj.gcp) by default
+        %
+        % See also: tfigure, tfigure.tfigure
             if(nargin == 2)
                 p = inputParser;
                 p.addOptional('panel',obj.gcp,@(x) strcmp(x.Type,'uipanel'))
@@ -459,11 +519,19 @@ classdef tfigure < hgsetget
         % exportToFigure Copies a panel to a new figure
         % 
         % USAGE:
-        % hf = h.exportToFigure
-        % hf = exportToFigure(h)
-        %  Copies current panel (h.gcp) to a new figure with handle hf
-        % hf = h.exportToFigure(panel)
-        %  Copies panel (panel) to a new figure with handle hf
+        %  hf = h.exportToFigure
+        %  hf = exportToFigure(h)
+        %   Copies current panel (h.gcp) to a new figure with handle hf
+        %  hf = h.exportToFigure(panel)
+        %   Copies panel (panel) to a new figure with handle hf
+        %
+        % INPUTS
+        %  panel - (optional) a panel handle to be exported
+        %   Uses the current panel (obj.gcp) by default
+        % OUTPUTS
+        %  hf - a handle to the newly created figure
+        %
+        % See also: tfigure, tfigure.tfigure
             if(nargin == 1)
                 panel = obj.gcp;
             elseif(isa(varargin{1},'matlab.ui.container.Panel'))
@@ -499,10 +567,15 @@ classdef tfigure < hgsetget
         %  Brings up a file selection dialog
         % h.savePPT(fileName,...)
         %
+        % FILENAME
+        %  fileName - file name of the file to save the plots
         % PARAMETERS:
         %  title - Title of the presentation
         %  subject - subject of presentation, included in file meta data
         %  comments - comments on the presentation
+        %  author - Author's name
+        %
+        % See also: tfigure, tfigure.tfigure
             if(~(exist('exportToPPTX','file')))
                error('tfigure:NeedExportToPPTX',...
                      ['exportToPPTX must be added to the path. ',...
@@ -544,12 +617,6 @@ classdef tfigure < hgsetget
             exportToPPTX('addtext',p.Results.title,...
                          'HorizontalAlignment','center',...
                          'VerticalAlignment','middle','FontSize',48);
-%             summary = findobj(obj.tabs,'Title','Summary');
-%             if(~isempty(summary))
-%                 startTab = 2;
-%             else
-%                 startTab = 1;
-%             end
             for tabNum = 1:length(obj.tabs)
                 ht = obj.tabs(tabNum);
 %                 hp = findobj(ht.Children,'tag','plot');
@@ -593,6 +660,9 @@ classdef tfigure < hgsetget
         function t = get.tabs(obj)
             t = obj.tabGroup.Children(1:end-1);
         end
+%         function set.tabs(obj,in)
+%             obj.tabs = [in obj.tabs(end)]
+%         end
     end
     methods (Access = private)
         function figResize(obj,src,~) % callbackdata is unused 3rd arg.
@@ -743,6 +813,24 @@ classdef tfigure < hgsetget
 %             else
 %                 
 %             end
+        end
+    end
+    methods (Access = private, Static = true)
+        function children = childReorder(children,order)
+        % childReorder reorders the children of tabs or plot lists
+        %
+        % INPUTS
+        %  children - 
+        %  Order - sets the an integer between 1 and length(children)+1 that 
+        %  specifies its index.  If order is empty, the first child is 
+        %  moved to the last child
+        %
+        %
+            if(isempty(order) || (order >= length(children)+1))
+                children = children([2:end 1]);
+            elseif((order > 1) && (order < length(children)))
+                children = children([2:order 1 (order+1):end]);
+            end
         end
     end
 end

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tfigure</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-17"><meta name="DC.source" content="tfigure.m"><style type="text/css">
+      --><title>tfigure</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-06-26"><meta name="DC.source" content="tfigure.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,17 +66,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">TFIGURE</a></li><li><a href="#3"><b>Properties</b></a></li><li><a href="#4"><b>Methods</b></a></li><li><a href="#5">TFIGURE([title_tab1]) Creates a new tabbed figure.</a></li><li><a href="#7">addTab([title])</a></li><li><a href="#9">addPlot([tab],'title',[title],'plotFcn',[function_handle])</a></li><li><a href="#11">addLabel Adds a label to the plot list</a></li><li><a href="#13">addCtrl([tab],[fun_handle(h_panel)],'title',[title])</a></li><li><a href="#15">addTable</a></li><li><a href="#17">savePPT</a></li></ul></div><pre class="codeinput"><span class="keyword">classdef</span> tfigure &lt; hgsetget
-</pre><h2>TFIGURE<a name="2"></a></h2><p>A figure for holding tabbed groups of plots. Creates a tabbed plot figure.  This allows the user to setup tabs to group plots.  Each tab contains a list of plots that can be selected using buttons on the left of the figure.</p><pre class="language-matlab">Example
- h = tfigure;
- h = tfigure(<span class="string">'Tab_title'</span>);
-</pre><p>tfigure Properties:  fig - Handle to the figure that displays tfigure.  tabs - Handles to each of the tfigure's tabs  figureSize - Current size of the figure containing tfigure</p><p>tfigure Methods:  tfigure - Constructs a new tabbed figure  addTab - Adds a new tab  addPlot - Adds a new plot to the given tab  savePPT - Saves all plots to a Power Point presentation.</p><p>Examples:  tFigExample - tfigure example</p><p>TO DO:</p><div><ul><li>Export Menu  * ppt, pictures, figures, copy image to clipboard  * Add support for using a ppt template</li><li>Control View   * Ability to add a button to the plot list to select a control    panel view in that tab.</li><li>Plot List    * Be able to add text Labels to group plots    * Be able to move plots up or down using mouse or a keyboard    shortcut    * Function to add a "Add Plot" button to the plot list GUI</li><li>Plot Context Menu    * uicontextmenu    * delete plot    * Reorder plot</li><li>Tab Bar    * "Add Tab" tab with a "+" label to create a new tab</li><li>Tab Context Menu    * change tab name using inputdlg function    * delete tab    * Reorder tab</li></ul></div><p>Author: Curtis Mayberry <a href="mailto:Curtisma3@gmail.com">Curtisma3@gmail.com</a> Curtisma.org</p><p>See Also: tFigExample</p><h2><b>Properties</b><a name="3"></a></h2><p>Class properties</p><pre class="codeinput">    properties
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">TFIGURE</a></li><li><a href="#3"><b>Properties</b></a></li><li><a href="#4"><b>Methods</b></a></li><li><a href="#5">TFIGURE([title_tab1]) Creates a new tabbed figure.</a></li><li><a href="#7">addTab</a></li><li><a href="#9">addPlot</a></li><li><a href="#11">addTable</a></li><li><a href="#13">addLabel Adds a label to the plot list</a></li><li><a href="#15">addCtrl</a></li><li><a href="#17">exportToClipboard</a></li><li><a href="#19">savePPT</a></li></ul></div><pre class="codeinput"><span class="keyword">classdef</span> tfigure &lt; hgsetget
+</pre><h2>TFIGURE<a name="2"></a></h2><p>A figure for holding tabbed groups of plots. Creates a tabbed plot figure.  This allows the user to setup tabs to group plots.  Each tab contains a list of plots that can be selected using buttons on the left of the figure.</p><p>Example  h = tfigure;  h = tfigure('Tab_title');</p><p>tfigure Properties:  fig - Handle to the figure that displays tfigure.  tabs - Handles to each of the tfigure's tabs  figureSize - Current size of the figure containing tfigure  gct - get current tab  gcp - get current panel</p><p>tfigure Methods:  tfigure - Constructs a new tabbed figure  addTab - Adds a new tab  addPlot - Adds a new plot to the given tab  addTable - Adds a table to the plot list  addLabel - Adds a label to the plot list  addCtrl - Adds a control panel to the plot list  savePPT - Saves all plots to a Power Point presentation.</p><p>Examples:  tFigExample - tfigure example</p><p>SETUP:  Files that can be downloaded from the MATLAB file exchange  exportToPPTX - Required to export to a pptx presentation   <a href="https://www.mathworks.com/matlabcentral/fileexchange/40277-exporttopptx">https://www.mathworks.com/matlabcentral/fileexchange/40277-exporttopptx</a></p><p>See issues in Github: <a href="https://github.com/curtisma/MATLAB_tfigure/issues">https://github.com/curtisma/MATLAB_tfigure/issues</a></p><p>Author: Curtis Mayberry <a href="mailto:Curtisma3@gmail.com">Curtisma3@gmail.com</a> Curtisma.org</p><p>See Also: tFigExample, tfigure.tfigure</p><h2><b>Properties</b><a name="3"></a></h2><p>Class properties</p><pre class="codeinput">    properties
         fig <span class="comment">% Handle to the figure that displays tfigure.</span>
-        tabs <span class="comment">% Handles to each of the tfigure's tabs</span>
+<span class="comment">%         tabs % Handles to each of the tfigure's tabs</span>
         menu <span class="comment">% Tfigure menu</span>
     <span class="keyword">end</span>
     properties (Dependent)
+        tabs <span class="comment">% Handles to each of the tfigure's tabs</span>
         figureSize <span class="comment">% Current size of the figure containing tfigure</span>
+        gct <span class="comment">% Get Current Tab</span>
+        gcp <span class="comment">% Get Current Panel</span>
     <span class="keyword">end</span>
     properties (Access = private)
         tabGroup
@@ -85,36 +85,53 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
         <span class="keyword">function</span> obj = tfigure(varargin)
 </pre><h2>TFIGURE([title_tab1]) Creates a new tabbed figure.<a name="5"></a></h2><pre>Additional tabs can be added to the figure using the addTab
 function.  Plots can be added to each tab by using the addPlot
-function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (optional)</p><p>see also: tFigExample</p><pre class="codeinput">        	obj.fig = figure(<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+function.</pre><pre>h = tfigure;
+ Creates a tfigure object
+h2 = tfigure('Data Tab #1');
+ Creates a tfigure object with "Data Tab #1" as the tab title.</pre><p>INPUTS  title_tab1 - (optional) The title of the first tab to be added. OUTPUTS  h - a tfigure object</p><p>see also: tFigExample</p><pre class="codeinput">        	obj.fig = figure(<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
                              <span class="string">'SizeChangedFcn'</span>,@obj.figResize,<span class="keyword">...</span>
                              <span class="string">'Interruptible'</span>,<span class="string">'off'</span>);
             obj.tabGroup = uitabgroup(<span class="string">'Parent'</span>, obj.fig);
             <span class="keyword">if</span>(nargin&gt;0)
-                obj.addTab(varargin{1});
+                obj.addTab(varargin{:});
             <span class="keyword">else</span>
                 obj.addTab;
             <span class="keyword">end</span>
 <span class="comment">%             obj.menu = uimenu(obj.fig,'Label','Tfigure');</span>
             obj.menu = uimenu(obj.fig,<span class="string">'Label'</span>,<span class="string">'Export'</span>);
             uimenu(obj.menu,<span class="string">'Label'</span>,<span class="string">'Export PPT'</span>,<span class="string">'Callback'</span>,@obj.exportMenu)
+            uimenu(obj.menu,<span class="string">'Label'</span>,<span class="string">'Copy Panel to Clipboard'</span>,<span class="string">'Callback'</span>,@obj.exportToClipboard);
+
+            uitab(<span class="string">'Parent'</span>, obj.tabGroup,<span class="string">'Title'</span>,<span class="string">'+'</span>,<span class="keyword">...</span>
+                  <span class="string">'ButtonDownFcn'</span>,@obj.addTab,<span class="string">'TooltipString'</span>,<span class="string">'Add Tab'</span>);
+
+            <span class="comment">% Add '+' addTab button</span>
+
             obj.fig.Visible = <span class="string">'on'</span>;
 <span class="comment">%             h_add = obj.addTab('+');</span>
 <span class="comment">%             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);</span>
 </pre><pre class="codeinput">        <span class="keyword">end</span>
-        <span class="keyword">function</span> out = get.figureSize(obj)
-            out = get(obj.fig,<span class="string">'position'</span>);
-        <span class="keyword">end</span>
-        <span class="keyword">function</span> set.figureSize(obj,val)
-            set(obj.fig,<span class="string">'position'</span>,val);
-        <span class="keyword">end</span>
         <span class="keyword">function</span> h = addTab(obj,varargin)
-</pre><h2>addTab([title])<a name="7"></a></h2><p>Adds a new tab with the given title.</p><p>USAGE:  tfig.addTab(title);</p><pre class="codeinput">            p = inputParser;
-            addOptional(p,<span class="string">'titleIn'</span>,<span class="keyword">...</span>
+</pre><h2>addTab<a name="7"></a></h2><p>Adds a new tab with the given title.</p><pre>ht = h.addTab([title],'Param','ParamValue',...);</pre><p>INPUTS  title - (optional) name of the tab PARAMETERS  order - Specifies the tab order  listName - The plot list title listed at the top   Defaults to 'Plots' OUTPUTS  ht - uitab handle of the added tab</p><p>See also: tfigure, tfigure.tfigure, tfigure.addPlot, tfigure.addTable</p><pre class="codeinput">            <span class="keyword">if</span>(~isempty(varargin) &amp;&amp; (isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>) || isa(varargin{1},<span class="string">'matlab.ui.container.Tab'</span>)))
+            <span class="comment">% Menu Call or '+' Tab call</span>
+            <span class="comment">% When called from the menu there is automatically 2</span>
+            <span class="comment">% inputs, the menu and the eventData</span>
+                p.Results.titleIn = [<span class="string">'dataset '</span> num2str(length(obj.tabs)+1)];
+                p.Results.order = [];
+                p.Results.listName = <span class="string">'Plots'</span>;
+            <span class="keyword">else</span>
+            <span class="comment">% User Call</span>
+                p = inputParser;
+                addOptional(p,<span class="string">'titleIn'</span>,<span class="keyword">...</span>
                         [<span class="string">'dataset '</span> num2str(length(obj.tabs)+1)],@isstr);
-            p.addParameter(<span class="string">'order'</span>,[], <span class="keyword">...</span>
+                p.addParameter(<span class="string">'order'</span>,[], <span class="keyword">...</span>
                              @(x) isnumeric(x) &amp;&amp; (x &gt;= 1) &amp;&amp; <span class="keyword">...</span>
                              (x &lt;= (length(obj.tabs)+1)))
-            parse(p,varargin{:});
+                p.addParameter(<span class="string">'listName'</span>,<span class="string">'Plots'</span>, @ischar)
+                parse(p,varargin{:});
+
+            <span class="keyword">end</span>
+
             order = p.Results.order;
 
             <span class="comment">% Setup tab</span>
@@ -122,12 +139,10 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
                       <span class="string">'Title'</span>, p.Results.titleIn,<span class="string">'ButtonDownFcn'</span>,@obj.selectTab);
 
             <span class="comment">% Setup tab order</span>
-            <span class="keyword">if</span>(isempty(order))
-                obj.tabs(end+1) = h;
-            <span class="keyword">else</span>
-                obj.tabs((order+1):end+1) = obj.tabs(order:end);
-                obj.tabs(order) = h;
-                <span class="keyword">if</span>(order == 1)
+            <span class="keyword">if</span>(isempty(order) &amp;&amp; length(obj.tabGroup.Children)&gt;1)
+                obj.tabGroup.Children = obj.tabGroup.Children([1:end-2 end end-1]);
+            <span class="keyword">elseif</span>(~isempty(order))
+                <span class="keyword">if</span>(order &lt;= 1)
                     obj.tabGroup.Children = obj.tabGroup.Children([end 1:end-1]);
                 <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(obj.tabGroup.Children)))
                     obj.tabGroup.Children = obj.tabGroup.Children([1:(order-1) end (order):end-1]);
@@ -138,16 +153,28 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             c = uicontextmenu;
             c.UserData = h;
             h.UIContextMenu = c;
-            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg);
-            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Add Tab'</span>,<span class="string">'Callback'</span>,@obj.addTab);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Add Plot'</span>,<span class="string">'Callback'</span>,@obj.addPlot);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Add Table'</span>,<span class="string">'Callback'</span>,@obj.addTable);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg,<span class="string">'Separator'</span>,<span class="string">'on'</span>);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg,<span class="string">'UserData'</span>,h);
 
             <span class="comment">% Setup plot list</span>
             figSize = obj.figureSize;
-            plotList = uibuttongroup(<span class="string">'parent'</span>,h,<span class="string">'Title'</span>,<span class="string">'Plots'</span>,<span class="keyword">...</span>
+            plotList = uibuttongroup(<span class="string">'parent'</span>,h,<span class="keyword">...</span>
                             <span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
                             <span class="string">'Position'</span>,[10 10  150 figSize(4)-45],<span class="keyword">...</span>
                             <span class="string">'tag'</span>,<span class="string">'plotList'</span>,<span class="keyword">...</span>
                             <span class="string">'SelectionChangedFcn'</span>,@obj.selectPlot);
+            set(plotList,<span class="string">'Title'</span>,p.Results.listName);
+
+            <span class="comment">% Menu</span>
+            plotList.UIContextMenu = uicontextmenu;
+            plotList.UIContextMenu.UserData = plotList;
+            uimenu(plotList.UIContextMenu,<span class="string">'Label'</span>,<span class="string">'Add Plot'</span>,<span class="string">'Callback'</span>,@obj.addPlot);
+            uimenu(plotList.UIContextMenu,<span class="string">'Label'</span>,<span class="string">'Add Table'</span>,<span class="string">'Callback'</span>,@obj.addTable);
+            uimenu(plotList.UIContextMenu,<span class="string">'Label'</span>,<span class="string">'Add Label'</span>,<span class="string">'Callback'</span>,@obj.addLabel);
+            uimenu(plotList.UIContextMenu,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg,<span class="string">'Separator'</span>,<span class="string">'on'</span>);
             h.UserData = plotList;
             <span class="keyword">if</span>(length(plotList.Children) &lt;= 1)
                 plotList.Visible = <span class="string">'off'</span>;
@@ -155,18 +182,24 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             <span class="comment">% Make the new tab current</span>
             obj.tabGroup.SelectedTab = h;
 </pre><pre class="codeinput">        <span class="keyword">end</span>
-        <span class="keyword">function</span> h = addPlot(obj,varargin)
-</pre><h2>addPlot([tab],'title',[title],'plotFcn',[function_handle])<a name="9"></a></h2><p>Adds a plot to the given tab.  When the button is selected the plotting routine given by  plotFcn is ran.</p><pre class="codeinput">            p=inputParser;
-            p.addOptional(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
+        <span class="keyword">function</span> ha = addPlot(obj,varargin)
+</pre><h2>addPlot<a name="9"></a></h2><p>Adds a plot to the given tab.  When the plot button is selected the plot is selected</p><p>ha = h.addPlot([title],'tab',[h_tab],'plotFcn',[function_handle])</p><p>INPUTS  title - (optional) Uses this string as the plot title displayed   in the plot list PARAMETERS  tab - Selects which tab will contain the table.  The tab can be   specified as a uitab handle or the name of the tab  plotFcn - A function handle to be evaluated when the plot is   selected. OUTPUTS  ha - Handle to the plot axis EXAMPLE  h = tfigure;  ha = h.addPlot('Plot Title');</p><p>see also: tfigure, tfigure.tfigure, tfigure.addTab, tfigure.addTable</p><pre class="codeinput">        <span class="keyword">if</span>(~isempty(varargin) &amp;&amp; ~isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>))
+            p=inputParser;
+            p.addOptional(<span class="string">'title'</span>,<span class="string">'plot'</span>,@ischar)
             p.addParameter(<span class="string">'plotFcn'</span>,[],@(x) (isa(x,<span class="string">'function_handle'</span>) || isempty(x)));
-            p.addParameter(<span class="string">'title'</span>,<span class="string">'plot'</span>,@ischar)
+            p.addParameter(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)));
             p.addParameter(<span class="string">'order'</span>,[],@isnumeric);
             p.parse(varargin{:})
-
+        <span class="keyword">else</span>
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.plotFcn = [];
+            p.Results.title = <span class="string">'plot'</span>;
+            p.Results.order = [];
+        <span class="keyword">end</span>
             <span class="comment">% Select the Tab</span>
             tab = obj.parseTab(p.Results.tab);
 
-            <span class="comment">% Add the new plot to the plot list</span>
+            <span class="comment">% Add the new analysis panel to the plot list</span>
             plotList = get(tab,<span class="string">'UserData'</span>); <span class="comment">% The tab's UserData contains a handle to the uibuttongroup for the tab</span>
             h = uicontrol(<span class="string">'parent'</span>,plotList,<span class="keyword">...</span>
                           <span class="string">'Style'</span>, <span class="string">'togglebutton'</span>,<span class="keyword">...</span>
@@ -179,35 +212,113 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             h.UIContextMenu = c;
             uimenu(c,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg);
             uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg);
+            exportMenu = uimenu(<span class="string">'Parent'</span>,c,<span class="string">'Label'</span>,<span class="string">'Export'</span>);
+            uimenu(exportMenu,<span class="string">'Label'</span>,<span class="string">'Copy to Clipboard'</span>,<span class="string">'Callback'</span>,@obj.exportToClipboard);
+            uimenu(exportMenu,<span class="string">'Label'</span>,<span class="string">'Copy to Figure'</span>,<span class="string">'Callback'</span>,@obj.exportToFigure);
+            <span class="comment">% Setup Panel</span>
+            h.UserData.hp = uipanel(<span class="string">'Parent'</span>,tab,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
+                                    <span class="string">'tag'</span>,<span class="string">'plot'</span>,<span class="string">'BorderType'</span>,<span class="string">'none'</span>);
+            h.UserData.hp.UserData.hc = h;
 
             <span class="comment">% Setup Axes</span>
-            h.UserData.fa = axes(<span class="string">'Parent'</span>,tab,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
-<span class="keyword">...</span><span class="comment">%                              'position',axesSize,...</span>
-                             <span class="string">'ActivePositionProperty'</span>,<span class="string">'OuterPosition'</span>);
-            h.UserData.fa.Visible = <span class="string">'on'</span>;
+            ha = axes(h.UserData.hp);<span class="comment">%,...'Units','pixels',...</span>
+<span class="comment">%                              'ActivePositionProperty','OuterPosition');</span>
+            ha.Visible = <span class="string">'on'</span>;
 
             <span class="comment">% Setup order</span>
-            order = p.Results.order;
-            <span class="keyword">if</span>(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            <span class="keyword">end</span>
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
 
             <span class="keyword">if</span>(~isempty(p.Results.plotFcn))
                 h.UserData.fh = p.Results.plotFcn;
                 p.Results.plotFcn();
+            <span class="keyword">else</span>
+                h.UserData.fh = [];
             <span class="keyword">end</span>
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
 </pre><pre class="codeinput">        <span class="keyword">end</span>
-        <span class="keyword">function</span> h = addLabel(obj,title,varargin)
-</pre><h2>addLabel Adds a label to the plot list<a name="11"></a></h2><p>USAGE:  h.addLabel(title,[tab],...)</p><pre class="codeinput">            p=inputParser;
-            p.addRequired(<span class="string">'title'</span>,@ischar);
-            p.addOptional(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
-            p.addParameter(<span class="string">'plotFcn'</span>,[],@(x) (isa(x,<span class="string">'function_handle'</span>) || isempty(x)));
+        <span class="keyword">function</span> varargout = addTable(obj,varargin)
+</pre><h2>addTable<a name="11"></a></h2><p>Adds a table to the given tab.</p><p>ht = h.addTable([title],'Param','ParamValue',...)</p><p>INPUTS  title - (optional) The table title to displayed on the selection   button PARAMETERS  tab - Selects which tab will contain the table.  The tab can be   specified as a uitab handle or the name of the tab  order - Position in the plot list  style - Selects between the default MATLAB table and a Java   table. uitable: 'uitable or 'ui'  Java Table: 'Java',   'JavaTable' OUTPUTS  ht - handle to the table</p><p>See also: tfigure.addPlot tfigure.addLabel tfigure.addCtrl</p><pre class="codeinput">        <span class="keyword">if</span>(~isempty(varargin) &amp;&amp; ~isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>))
+            p=inputParser;
+            p.addOptional(<span class="string">'title'</span>,<span class="string">'table'</span>,@ischar)
+            p.addParameter(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
             p.addParameter(<span class="string">'order'</span>,[],@isnumeric);
-            p.parse(title,varargin{:})
+            p.addParameter(<span class="string">'style'</span>,<span class="string">'uitable'</span>,<span class="keyword">...</span>
+                @(x) any(validatestring(x,{<span class="string">'uitable'</span>,<span class="string">'ui'</span>,<span class="string">'JavaTable'</span>,<span class="string">'Java'</span>})))
+            p.parse(varargin{:})
+        <span class="keyword">else</span>
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.title = <span class="string">'table'</span>;
+            p.Results.order = [];
+            p.Results.style = <span class="string">'uitable'</span>;
+        <span class="keyword">end</span>
+            <span class="comment">% Select the Tab</span>
+            tab = obj.parseTab(p.Results.tab);
+
+            <span class="comment">% Add the new plot to the plot list</span>
+            plotList = get(tab,<span class="string">'UserData'</span>); <span class="comment">% The tab's UserData contains a handle to the uibuttongroup for the tab</span>
+            h = uicontrol(<span class="string">'parent'</span>,plotList,<span class="keyword">...</span>
+                            <span class="string">'Style'</span>, <span class="string">'togglebutton'</span>,<span class="keyword">...</span>
+                            <span class="string">'String'</span>, p.Results.title,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
+                            <span class="string">'tag'</span>,<span class="string">'table'</span>);
+<span class="comment">%             h.UserData = p.Results.fun_handle;</span>
+
+            <span class="comment">% Setup Context Menu</span>
+            c = uicontextmenu;
+            c.UserData = h;
+            h.UIContextMenu = c;
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg);
+            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg);
+
+            <span class="comment">% Setup Panel</span>
+            h.UserData.hp = uipanel(<span class="string">'Parent'</span>,tab,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
+                                    <span class="string">'tag'</span>,<span class="string">'plot'</span>,<span class="string">'BorderType'</span>,<span class="string">'none'</span>);
+            h.UserData.hp.UserData.hc = h;
+            h.UserData.fh = [];
+
+            <span class="comment">% Setup Table</span>
+            <span class="keyword">if</span>(strcmpi(p.Results.style,<span class="string">'uitable'</span>) || strcmpi(p.Results.style,<span class="string">'ui'</span>))
+                ht = uitable(<span class="string">'Parent'</span>,h.UserData.hp,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'Position'</span>,[0 0 1 1]);<span class="comment">%,'Units','pixels');</span>
+            <span class="keyword">elseif</span>(strcmpi(p.Results.style,<span class="string">'JavaTable'</span>) || strcmpi(p.Results.style,<span class="string">'java'</span>))
+                <span class="keyword">if</span>(~(exist(<span class="string">'exportToPPTX'</span>,<span class="string">'file'</span>)))
+                    error(<span class="string">'tfigure:NeedExportToPPTX'</span>,<span class="keyword">...</span>
+                         [<span class="string">'createTable must be added to the path. '</span>,<span class="keyword">...</span>
+                        <span class="string">'It can be downloaded from the MATLAB file exchange, search for "Java-based data table"'</span>]);
+                <span class="keyword">end</span>
+                ht = uiextras.jTable.Table(<span class="string">'Parent'</span>,h.UserData.hp);
+            <span class="keyword">end</span>
+            <span class="comment">%             h.UserData.fa.Visible = 'on';</span>
+            h.UserData.hp.UserData.hc = ht;
+
+            <span class="comment">% Setup order</span>
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+
+            plotList.SelectedObject = h;
+            obj.selectPlot(plotList,[]);
+
+            <span class="comment">% Setup outputs</span>
+            <span class="keyword">if</span>(nargout == 0)
+                varargout = {};
+            <span class="keyword">elseif</span>(nargout == 1)
+                varargout = {ht};
+            <span class="keyword">elseif</span>(nargout == 2)
+                varargout = {ht h};
+            <span class="keyword">else</span>
+                error(<span class="string">'tfigure:addTable:nargoutWrong'</span>,<span class="string">'The number of outputs must be 0-2'</span>);
+            <span class="keyword">end</span>
+</pre><pre class="codeinput">        <span class="keyword">end</span>
+        <span class="keyword">function</span> h = addLabel(obj,varargin)
+</pre><h2>addLabel Adds a label to the plot list<a name="13"></a></h2><pre>hl = h.addLabel(title,[tab],...)</pre><p>INPUTS  title - text to display PARAMETERS  title - text to display  order - Position in the plot list  tab - Selects which tab will contain the table.  The tab can be   specified as a uitab handle or the name of the tab OUTPUTS  hl - label handle</p><p>see also: tfigure, tfigure.tfigure, tfigure.addTab, tfigure.addTable</p><pre class="codeinput">            <span class="keyword">if</span>(~isempty(varargin) &amp;&amp; ~isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>))
+                p=inputParser;
+                p.addRequired(<span class="string">'title'</span>,@ischar);
+                p.addParameter(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
+                p.addParameter(<span class="string">'order'</span>,[],@isnumeric);
+                p.parse(varargin{:})
+            <span class="keyword">else</span>
+                p.Results.title = inputdlg(<span class="string">'Label:'</span>,<span class="string">'Label'</span>,1,{<span class="string">''</span>});
+                p.Results.tab = obj.tabGroup.SelectedTab;
+                p.Results.order = [];
+            <span class="keyword">end</span>
 
             <span class="comment">% Select the Tab</span>
             tab = obj.parseTab(p.Results.tab);
@@ -227,20 +338,28 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg);
 
             <span class="comment">% Setup order</span>
-            order = p.Results.order;
-            <span class="keyword">if</span>(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            <span class="keyword">end</span>
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+
+            obj.selectPlot(plotList,[]);
 </pre><pre class="codeinput">        <span class="keyword">end</span>
         <span class="keyword">function</span> h = addCtrl(obj,varargin)
-</pre><h2>addCtrl([tab],[fun_handle(h_panel)],'title',[title])<a name="13"></a></h2><p>Adds a control item to the given tab. When the button is selected the control panel given by fun_handle is displayed.</p><p>fun_handle has a single input that is a handle to the panel that will contain the control panel.</p><pre class="codeinput">            p=inputParser;
-            p.addOptional(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
+</pre><h2>addCtrl<a name="15"></a></h2><p>Adds a control panel to a tab  Requires a fun_handle which points to the control panel function  which defines its contents</p><pre>hp = h.addCtrl([title],[fun_handle(h_panel)],'Param','value')
+INPUTS
+title - (optional) text of the control's plot list button
+fun_handle - (optional) A function that defines the control panel.  It has
+ a single input that is a handle to the panel that will contain
+ the control panel.
+PARAMETERS
+order - Position in the plot list
+tab - Selects which tab will contain the table.  The tab can be
+ specified as a uitab handle or the name of the tab
+OUTPUTS
+ hp - handle for the control panel's plot list button</pre><p>See also: tfigure, tfigure.tfigure</p><pre class="codeinput">            p=inputParser;
+            p.addOptional(<span class="string">'title'</span>,<span class="string">'Options'</span>,@ischar);
             p.addOptional(<span class="string">'fun_handle'</span>,[],@(x) isa(x,<span class="string">'function_handle'</span>));
-            p.addParameter(<span class="string">'title'</span>,<span class="string">'Options'</span>,@ischar)
+            p.addParameter(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)));
             p.addParameter(<span class="string">'order'</span>,[],@isnumeric);
-            p.parse(varargin{:})
+            p.parse(varargin{:});
 
             <span class="comment">% Select the Tab</span>
             tab = obj.parseTab(p.Results.tab);
@@ -256,8 +375,9 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             h_panel = uipanel(<span class="string">'Parent'</span>,tab,<span class="keyword">...</span>
                               <span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
                               <span class="string">'Position'</span>,[30 30  figSize(3)-30 figSize(4)-30],<span class="keyword">...</span>
+                              <span class="string">'tag'</span>,<span class="string">'ctrl'</span>,<span class="keyword">...</span>
                               <span class="string">'Title'</span>,p.Results.title);
-            h.UserData.fa = h_panel;
+            h.UserData.hp = h_panel;
 
             <span class="comment">% Setup Context Menu</span>
             c = uicontextmenu;
@@ -271,13 +391,7 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
 <span class="comment">%             h.UserData.fa.Visible = 'on';</span>
 
             <span class="comment">% Setup order</span>
-            order = p.Results.order;
-            <span class="keyword">if</span>(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            <span class="keyword">end</span>
-
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
 
             <span class="keyword">if</span>(~isempty(p.Results.fun_handle))
                 h.UserData.fh = p.Results.fun_handle;
@@ -286,59 +400,84 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
 </pre><pre class="codeinput">        <span class="keyword">end</span>
-        <span class="keyword">function</span> varargout = addTable(obj,varargin)
-</pre><h2>addTable<a name="15"></a></h2><p>Adds a table to the given tab.</p><p>h.addTable([tab])</p><pre class="codeinput">            p=inputParser;
-            p.addOptional(<span class="string">'tab'</span>,obj.tabGroup.SelectedTab,@(x) (isa(x,<span class="string">'double'</span>) || isa(x,<span class="string">'matlab.ui.container.Tab'</span>) || ischar(x)))
-            p.addParameter(<span class="string">'title'</span>,<span class="string">'plot'</span>,@ischar)
-            p.addParameter(<span class="string">'order'</span>,[],@isnumeric);
-            p.parse(varargin{:})
-
-            <span class="comment">% Select the Tab</span>
-            tab = obj.parseTab(p.Results.tab);
-
-            <span class="comment">% Add the new plot to the plot list</span>
-            plotList = get(tab,<span class="string">'UserData'</span>); <span class="comment">% The tab's UserData contains a handle to the uibuttongroup for the tab</span>
-            h = uicontrol(<span class="string">'parent'</span>,plotList,<span class="keyword">...</span>
-                            <span class="string">'Style'</span>, <span class="string">'togglebutton'</span>,<span class="keyword">...</span>
-                            <span class="string">'String'</span>, p.Results.title,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="keyword">...</span>
-                            <span class="string">'tag'</span>,<span class="string">'table'</span>);
-<span class="comment">%             h.UserData = p.Results.fun_handle;</span>
-
-            <span class="comment">% Setup Context Menu</span>
-            c = uicontextmenu;
-            c.UserData = h;
-            h.UIContextMenu = c;
-            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Rename'</span>,<span class="string">'Callback'</span>,@obj.renameDlg);
-            uimenu(c,<span class="string">'Label'</span>,<span class="string">'Delete'</span>,<span class="string">'Callback'</span>,@obj.deleteDlg);
-
-            <span class="comment">% Setup Table</span>
-            h.UserData.fa = uitable(<span class="string">'Parent'</span>,tab,<span class="string">'Units'</span>,<span class="string">'pixels'</span>);
-            h.UserData.fa.Visible = <span class="string">'on'</span>;
-
-            <span class="comment">% Setup order</span>
-            order = p.Results.order;
-            <span class="keyword">if</span>(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            <span class="keyword">end</span>
-
-            plotList.SelectedObject = h;
-            obj.selectPlot(plotList,[]);
-
-            <span class="comment">% Setup outputs</span>
-            <span class="keyword">if</span>(nargout == 0)
-                varargout = {};
-            <span class="keyword">elseif</span>(nargout == 1)
-                varargout = {h.UserData.fa};
-            <span class="keyword">elseif</span>(nargout == 2)
-                varargout = {h.UserData.fa h};
+        <span class="comment">%function export(obj,varargin)</span>
+        <span class="comment">% export Exports an analysis panel, a tab, or an entire tfigure using</span>
+        <span class="comment">% the specified format</span>
+        <span class="comment">%</span>
+        <span class="comment">% Not currently implemented</span>
+        <span class="comment">%end</span>
+        <span class="keyword">function</span> exportToClipboard(obj,varargin)
+</pre><h2>exportToClipboard<a name="17"></a></h2><p>Exports a panel to the clipboard as if it it were in its own figure</p><p>obj.exportToClipboard([panel]</p><p>INPUTS  panel - (optional) a panel handle to be exported   Uses the current panel (obj.gcp) by default</p><p>See also: tfigure, tfigure.tfigure</p><pre class="codeinput">            <span class="keyword">if</span>(nargin == 2)
+                p = inputParser;
+                p.addOptional(<span class="string">'panel'</span>,obj.gcp,@(x) strcmp(x.Type,<span class="string">'uipanel'</span>))
+                p.parse(varargin{:});
+            <span class="keyword">elseif</span>(nargin == 3)
+                <span class="keyword">if</span>(~isempty(varargin{1}.Parent.UserData) &amp;&amp; strcmp(varargin{1}.Parent.UserData.Type,<span class="string">'uicontrol'</span>))
+                    p.Results.panel = varargin{1}.Parent.UserData.UserData.hp;
+                <span class="keyword">else</span>
+                    p.Results.panel = obj.gcp;
+                <span class="keyword">end</span>
             <span class="keyword">else</span>
-                error(<span class="string">'tfigure:addTable:nargoutWrong'</span>,<span class="string">'The number of outputs must be 0-2'</span>);
+                p.Results.panel = obj.gcp;
             <span class="keyword">end</span>
+
+            <span class="comment">% Copy the panel to a seperate figure and copy tp clipboard</span>
+            hf = figure(<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+            hp = copy(p.Results.panel);
+            hp.Parent = hf;
+            hp.BackgroundColor = <span class="string">'w'</span>;
+            hp.Units = <span class="string">'normalized'</span>;
+            hp.Position = [0 0 1 1];
+            hp.Visible = <span class="string">'on'</span>;
+            print(hf,<span class="string">'-clipboard'</span>,<span class="string">'-dbitmap'</span>)
+            close(hf);
 </pre><pre class="codeinput">        <span class="keyword">end</span>
+        <span class="keyword">function</span> varargout = exportToFigure(obj,varargin)
+        <span class="comment">% exportToFigure Copies a panel to a new figure</span>
+        <span class="comment">%</span>
+        <span class="comment">% USAGE:</span>
+        <span class="comment">%  hf = h.exportToFigure</span>
+        <span class="comment">%  hf = exportToFigure(h)</span>
+        <span class="comment">%   Copies current panel (h.gcp) to a new figure with handle hf</span>
+        <span class="comment">%  hf = h.exportToFigure(panel)</span>
+        <span class="comment">%   Copies panel (panel) to a new figure with handle hf</span>
+        <span class="comment">%</span>
+        <span class="comment">% INPUTS</span>
+        <span class="comment">%  panel - (optional) a panel handle to be exported</span>
+        <span class="comment">%   Uses the current panel (obj.gcp) by default</span>
+        <span class="comment">% OUTPUTS</span>
+        <span class="comment">%  hf - a handle to the newly created figure</span>
+        <span class="comment">%</span>
+        <span class="comment">% See also: tfigure, tfigure.tfigure</span>
+            <span class="keyword">if</span>(nargin == 1)
+                panel = obj.gcp;
+            <span class="keyword">elseif</span>(isa(varargin{1},<span class="string">'matlab.ui.container.Panel'</span>))
+                panel = varargin{1};
+            <span class="keyword">elseif</span>(nargin == 3 &amp;&amp; isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>))
+            <span class="comment">% Callback</span>
+                panel = varargin{1}.Parent.Parent.UserData.UserData.hp;
+            <span class="keyword">else</span>
+                panel = obj.gcp;
+            <span class="keyword">end</span>
+
+            <span class="keyword">if</span>(nargin&gt;2 &amp;&amp; ~isa(varargin{1},<span class="string">'matlab.ui.container.Menu'</span>))
+                h = figure(varargin{2:end});
+            <span class="keyword">else</span>
+                h = figure;
+            <span class="keyword">end</span>
+            hp = copy(panel);
+            hp.Units = <span class="string">'normalized'</span>;
+            hp.Position = [0 0 1 1];
+            hp.Parent = h;
+            hp.Visible = <span class="string">'on'</span>;
+            <span class="keyword">if</span>(nargout == 1)
+                varargout{1} = h;
+            <span class="keyword">elseif</span>(nargout == 2)
+                varargout = {h hp};
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
         <span class="keyword">function</span> savePPT(obj,varargin)
-</pre><h2>savePPT<a name="17"></a></h2><p>Saves all the plots in tfigure to a powerpoint presentation.</p><p>h.savePPT</p><pre class="codeinput">            <span class="keyword">if</span>(~(exist(<span class="string">'exportToPPTX'</span>,<span class="string">'file'</span>)))
+</pre><h2>savePPT<a name="19"></a></h2><p>Saves all the plots in tfigure to a powerpoint presentation.</p><p>h.savePPT(...)  Brings up a file selection dialog h.savePPT(fileName,...)</p><p>FILENAME  fileName - file name of the file to save the plots PARAMETERS:  title - Title of the presentation  subject - subject of presentation, included in file meta data  comments - comments on the presentation  author - Author's name</p><p>See also: tfigure, tfigure.tfigure</p><pre class="codeinput">            <span class="keyword">if</span>(~(exist(<span class="string">'exportToPPTX'</span>,<span class="string">'file'</span>)))
                error(<span class="string">'tfigure:NeedExportToPPTX'</span>,<span class="keyword">...</span>
                      [<span class="string">'exportToPPTX must be added to the path. '</span>,<span class="keyword">...</span>
                      <span class="string">'It can be downloaded from the MATLAB file exchange'</span>]);
@@ -357,7 +496,11 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             p.parse(varargin{:});
             <span class="keyword">if</span>(isempty(p.Results.fileName))
                 [fileName,pathname] = uiputfile(<span class="string">'.pptx'</span>,<span class="string">'Export PPTX: select a file name'</span>);
-                fileName = fullfile(pathname,fileName);
+                <span class="keyword">if</span>(fileName ~= 0)
+                    fileName = fullfile(pathname,fileName);
+                <span class="keyword">else</span>
+                    <span class="keyword">return</span>
+                <span class="keyword">end</span>
             <span class="keyword">else</span>
                 fileName = p.Results.fileName;
             <span class="keyword">end</span>
@@ -375,24 +518,18 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             exportToPPTX(<span class="string">'addtext'</span>,p.Results.title,<span class="keyword">...</span>
                          <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
                          <span class="string">'VerticalAlignment'</span>,<span class="string">'middle'</span>,<span class="string">'FontSize'</span>,48);
-            numTabs = length(obj.tabs);
-            summary = findobj(obj.tabs,<span class="string">'Title'</span>,<span class="string">'Summary'</span>);
-            <span class="keyword">if</span>(~isempty(summary))
-                startTab = 2;
-            <span class="keyword">else</span>
-                startTab = 1;
-            <span class="keyword">end</span>
-            <span class="keyword">for</span> tabNum = startTab:numTabs
-                ht = get(obj.tabs(tabNum));
-                hp = findobj(ht.Children,<span class="string">'tag'</span>,<span class="string">'plot'</span>);
+            <span class="keyword">for</span> tabNum = 1:length(obj.tabs)
+                ht = obj.tabs(tabNum);
+<span class="comment">%                 hp = findobj(ht.Children,'tag','plot');</span>
                 exportToPPTX(<span class="string">'addslide'</span>);
                 exportToPPTX(<span class="string">'addtext'</span>,ht.Title,<span class="keyword">...</span>
                              <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="keyword">...</span>
                              <span class="string">'VerticalAlignment'</span>,<span class="string">'middle'</span>,<span class="string">'FontSize'</span>,48);
-                <span class="keyword">for</span> plotNum = 1:length(hp)
-                    h = figure(<span class="string">'Position'</span>,obj.fig.Position,<span class="keyword">...</span>
-                               <span class="string">'Color'</span>,[1 1 1],<span class="string">'Visible'</span>,<span class="string">'off'</span>);
-                    hp(plotNum).UserData();
+                panels = [ht.UserData.Children.UserData];
+                panels = [panels.hp];
+                <span class="keyword">for</span> panelNum = 1:length(panels)
+                    [h hp] = obj.exportToFigure(panels(panelNum),<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+                    hp.BackgroundColor = <span class="string">'w'</span>;
                     exportToPPTX(<span class="string">'addslide'</span>);
                     exportToPPTX(<span class="string">'addpicture'</span>,h,<span class="string">'Scaled'</span>,<span class="string">'maxfixed'</span>);
                     close(h);
@@ -401,6 +538,32 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             exportToPPTX(<span class="string">'save'</span>,fileName);
             exportToPPTX(<span class="string">'close'</span>);
 </pre><pre class="codeinput">        <span class="keyword">end</span>
+        <span class="keyword">function</span> out = get.figureSize(obj)
+            out = get(obj.fig,<span class="string">'position'</span>);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> set.figureSize(obj,val)
+            set(obj.fig,<span class="string">'position'</span>,val);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> h = get.gct(obj)
+        <span class="comment">% gct Get Current Tab</span>
+        <span class="comment">%  Returns the handle to the current tab</span>
+        h = obj.tabGroup.SelectedTab;
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> h = get.gcp(obj)
+        <span class="comment">% gcp Get Current Panel</span>
+        <span class="comment">%  Returns the handle to the current tab</span>
+            <span class="keyword">if</span>(~isempty(obj.gct.UserData.SelectedObject))
+                h = obj.gct.UserData.SelectedObject.UserData.hp;
+            <span class="keyword">else</span>
+                h = [];
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> t = get.tabs(obj)
+            t = obj.tabGroup.Children(1:end-1);
+        <span class="keyword">end</span>
+<span class="comment">%         function set.tabs(obj,in)</span>
+<span class="comment">%             obj.tabs = [in obj.tabs(end)]</span>
+<span class="comment">%         end</span>
     <span class="keyword">end</span>
     methods (Access = private)
         <span class="keyword">function</span> figResize(obj,src,~) <span class="comment">% callbackdata is unused 3rd arg.</span>
@@ -418,28 +581,13 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
 <span class="comment">%             obj.figureSize = figSize;</span>
 
             <span class="comment">% Find selected tab and plot</span>
-            currTab = obj.tabGroup.SelectedTab;
-            <span class="keyword">if</span>(~isempty(currTab.UserData.SelectedObject))
-                currPlot = currTab.UserData.SelectedObject;
-                currAxes = currPlot.UserData.fa;
-                numPlots = length(currTab.UserData.Children);
+<span class="comment">%             currTab = obj.tabGroup.SelectedTab;</span>
+            <span class="keyword">if</span>(~isempty(obj.gct.UserData.SelectedObject))
+                numPlots = length(obj.gct.UserData.Children);
             <span class="keyword">else</span>
-                <span class="comment">%currPlot = [];</span>
-                currAxes = [];
                 numPlots = 0;
             <span class="keyword">end</span>
 
-            <span class="comment">% Resize current axes</span>
-            leg_pos = [0 0 0 0];
-            <span class="keyword">if</span>(~isempty(currAxes) &amp;&amp; strcmp(currAxes.Type,<span class="string">'axes'</span>))
-                <span class="comment">% Legend Adjustment</span>
-                l = legend;
-                <span class="keyword">if</span>(~isempty(l))
-                    l.Units = <span class="string">'pixels'</span>;
-                    leg_pos = l.Position;
-                    set(currAxes,<span class="string">'ActivePositionProperty'</span>,<span class="string">'OuterPosition'</span>);
-                <span class="keyword">end</span>
-            <span class="keyword">end</span>
             <span class="comment">% Plot list adjustment</span>
             <span class="keyword">if</span>(numPlots==1)
                 plotListAdj = [-160 0 150 0];
@@ -447,12 +595,18 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
                 plotListAdj = [0 0 0 0];
             <span class="keyword">end</span>
 
-            <span class="comment">%Resize Current Axes</span>
-            set(currAxes,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="string">'Position'</span>,[210 50  figSize(3)-240 figSize(4)-110]<span class="keyword">...</span>
-                                                   - [0 0 ceil(leg_pos(3)) 0]<span class="keyword">...</span><span class="comment"> % Legend Adjustment</span>
+            <span class="comment">%Resize Current "Axes"</span>
+            <span class="keyword">if</span>(strcmp(get(obj.gcp,<span class="string">'tag'</span>),<span class="string">'ctrl'</span>)) <span class="comment">% Resize ctrl panels</span>
+                set(obj.gcp,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="string">'Position'</span>,[170 10  figSize(3)-185 figSize(4)-45]<span class="keyword">...</span>
+                                                   <span class="keyword">...</span><span class="comment">%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment</span>
                                                    + plotListAdj); <span class="comment">% Plot list adjustment</span>
+            <span class="keyword">else</span> <span class="comment">% Resize Axes</span>
+            set(obj.gcp,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="string">'Position'</span>,[170 10  figSize(3)-185 figSize(4)-45]<span class="keyword">...</span>
+                                                   <span class="keyword">...</span><span class="comment">%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment</span>
+                                                   + plotListAdj); <span class="comment">% Plot list adjustment</span>
+            <span class="keyword">end</span>
             <span class="comment">% Resize the plot list</span>
-            plots = currTab.UserData.Children;
+            plots = obj.gct.UserData.Children;
             <span class="keyword">for</span> n = 1:length(plots)
                 set(plots(n),<span class="string">'Position'</span>,[10 figSize(4)-85-30*(n-1) 120 20]);
             <span class="keyword">end</span>
@@ -460,80 +614,38 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             <span class="comment">% Resize each list of plots</span>
             plotLists = findobj(src,<span class="string">'tag'</span>,<span class="string">'plotList'</span>,<span class="string">'-and'</span>,<span class="keyword">...</span>
                                 <span class="string">'Type'</span>,<span class="string">'uibuttongroup'</span>);
-            set(plotLists,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="string">'Position'</span>,[10 10  150 figSize(4)-45])
-<span class="comment">%             % Resize each axis</span>
-<span class="comment">%             axesList = findobj(src,'Type','axes');</span>
-<span class="comment">%             if(~isempty(axesList))</span>
-<span class="comment">%                 l = legend;</span>
-<span class="comment">%                 if(~isempty(l))</span>
-<span class="comment">%                     l.Units = 'pixels';</span>
-<span class="comment">%                     leg_pos = l.Position;</span>
-<span class="comment">%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110] - [0 0 ceil(leg_pos(3)) 0],'ActivePositionProperty','OuterPosition');</span>
-<span class="comment">%                 else</span>
-<span class="comment">%                     % TO DO: Add support for single plot tabs</span>
-<span class="comment">%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110],'ActivePositionProperty','OuterPosition');</span>
-<span class="comment">%                 end</span>
-<span class="comment">%             end</span>
-<span class="comment">%             % Reposition plot buttons</span>
-<span class="comment">%             for i_tab = 1:length(obj.tabs)</span>
-<span class="comment">% %                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...</span>
-<span class="comment">% %                                 'Style','togglebutton');</span>
-<span class="comment">%                 plots = get(get(obj.tabs(i_tab),'UserData'),'Children');</span>
-<span class="comment">%                 for n = 1:length(plots)</span>
-<span class="comment">%                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);</span>
-<span class="comment">%                 end</span>
-<span class="comment">%             end</span>
-
+            set(plotLists,<span class="string">'Units'</span>,<span class="string">'pixels'</span>,<span class="string">'Position'</span>,[10 10  150 figSize(4)-45]);
         <span class="keyword">end</span>
-        <span class="keyword">function</span> selectPlot(obj,src,~) <span class="comment">% ~ is obj and callbackdata</span>
+        <span class="keyword">function</span> selectPlot(obj,src,~) <span class="comment">% ~ is callbackdata</span>
         <span class="comment">% selectPlot Runs whenever a plot is selected from the plot list</span>
             <span class="keyword">if</span>(length(src.Children) &gt; 1)
-                visible_plot = findobj(src.Parent.Children,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
-                <span class="keyword">for</span> i = 1:length(visible_plot)
-                    visible_plot(i).Visible = <span class="string">'off'</span>;
-                <span class="keyword">end</span>
-                src.SelectedObject.UserData.fa.Visible = <span class="string">'on'</span>;
-                <span class="comment">% Turn on plotted material</span>
-                material = src.SelectedObject.UserData.fa.Children;
-                <span class="keyword">if</span>(~isempty(material))
-                    <span class="keyword">for</span> i = 1:length(material)
-                        material(i).Visible = <span class="string">'on'</span>;
-                    <span class="keyword">end</span>
-                <span class="keyword">end</span>
-                set(src.Children,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+                h_panels = [src.Children.UserData];
+                h_panels = [h_panels.hp];
+                set(h_panels,<span class="string">'visible'</span>,<span class="string">'off'</span>)
+
+                src.SelectedObject.UserData.hp.Visible = <span class="string">'on'</span>;
                 src.Visible = <span class="string">'on'</span>;
-<span class="comment">%                 for i = 1:length(src.Children)</span>
-<span class="comment">%                       src.Children.</span>
-<span class="comment">%                     src.Children(i).UserData.fa.Visible = 'off';</span>
-<span class="comment">%                 end</span>
-            <span class="keyword">else</span>
-<span class="comment">%                 axesSize = [50 50 obj.figureSize(3)-90 obj.figureSize(4)-110];</span>
-<span class="comment">%                 src.SelectedObject.UserData.fa.Position = axesSize;</span>
+                <span class="keyword">if</span>(~isempty(findobj(src.SelectedObject.UserData.hp.Children,<span class="string">'Type'</span>,<span class="string">'axes'</span>)))
+                    axes(findobj(src.SelectedObject.UserData.hp.Children,<span class="string">'Type'</span>,<span class="string">'axes'</span>));
+                <span class="keyword">end</span>
             <span class="keyword">end</span>
-<span class="comment">%             if isa(src.SelectedObject.UserData, 'function_handle')</span>
-<span class="comment">%                 axes(findobj(src.Parent,'Type','Axes'));</span>
-<span class="comment">%                 src.SelectedObject.UserData(); % contains the plot function handle</span>
-<span class="comment">%             elseif(isa(src.SelectedObject.UserData,'matlab.graphics.axis.Axes'))</span>
-<span class="comment">%                 % Turn off current axes</span>
-<span class="comment">%                 h_current = axes(findobj(src.Parent,'Type','Axes','-and',...</span>
-<span class="comment">%                                          'Visible','on'));</span>
-<span class="comment">%                 h_current.Visible = 'off';</span>
-<span class="comment">%                 h_current.children.Visible = 'off';</span>
-<span class="comment">%                 % Turn on new axes</span>
-<span class="comment">% %                 h_new =</span>
-<span class="comment">%             end</span>
             obj.figResize(obj.fig);
         <span class="keyword">end</span>
-        <span class="keyword">function</span> selectTab(obj,~,~)
+        <span class="keyword">function</span> selectTab(obj,b,c)
             obj.figResize(obj.fig);
+            <span class="keyword">if</span>(~isempty(obj.gcp) &amp;&amp; <span class="keyword">...</span>
+               ~isempty(findobj(obj.gcp.Children,<span class="string">'Type'</span>,<span class="string">'axes'</span>)))
+                axes(findobj(obj.gcp.Children,<span class="string">'Type'</span>,<span class="string">'axes'</span>));
+            <span class="keyword">end</span>
         <span class="keyword">end</span>
         <span class="keyword">function</span> tab_out = parseTab(obj,tab)
         <span class="comment">% parseTab - parses a tab input, creating a new tab if the tab</span>
-        <span class="comment">%  input is a tab name that doesn't exist.</span>
+        <span class="comment">%  input is a tab name that doesn't exist.  Can accept a handle or</span>
+        <span class="comment">%  a string input of the tab name.</span>
             <span class="keyword">if</span>(ischar(tab))
-                tab_obj = findobj(tab,<span class="string">'Type'</span>,<span class="string">'tab'</span>);
+                tab_obj = findobj(obj.tabs,<span class="string">'Type'</span>,<span class="string">'uitab'</span>,<span class="string">'Title'</span>,tab);
                 <span class="keyword">if</span>(isempty(tab_obj))
-                    obj.addTab(tab)
+                    tab_out = obj.addTab(tab);
                 <span class="keyword">else</span>
                     tab_out = tab_obj;
                 <span class="keyword">end</span>
@@ -542,7 +654,8 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
             <span class="keyword">end</span>
         <span class="keyword">end</span>
         <span class="keyword">function</span> exportMenu(obj,menu,~)
-        <span class="comment">% Export menu</span>
+        <span class="comment">% Export menu callback</span>
+        <span class="comment">%  Executes the requested depending on the selected export option</span>
             <span class="keyword">if</span>(strcmp(menu.Label,<span class="string">'Export PPT'</span>))
                 obj.savePPT();
             <span class="keyword">end</span>
@@ -555,22 +668,46 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
                 prevName = {menu.Parent.UserData.String};
                 <span class="comment">% Get new name from the user</span>
                 newName = inputdlg(<span class="string">'New Name:'</span>,<span class="string">'Rename'</span>,1,prevName);
-                menu.Parent.UserData.String = newName{1};
-            <span class="keyword">elseif</span>(strcmpi(type, <span class="string">'uitab'</span>))
+                <span class="keyword">if</span>(~isempty(newName))
+                    menu.Parent.UserData.String = newName{1};
+                <span class="keyword">end</span>
+            <span class="keyword">elseif</span>(any(strcmpi(type, {<span class="string">'uitab'</span>,<span class="string">'uibuttongroup'</span>})))
                 prevName = {menu.Parent.UserData.Title};
                 <span class="comment">% Get new name from the user</span>
                 newName = inputdlg(<span class="string">'New Name:'</span>,<span class="string">'Rename'</span>,1,prevName);
-                menu.Parent.UserData.Title = newName{1};
+                <span class="keyword">if</span>(~isempty(newName))
+                    menu.Parent.UserData.Title = newName{1};
+                <span class="keyword">end</span>
             <span class="keyword">else</span>
                 error(<span class="string">'tfigure:renameDlg:unknownSelectionType'</span>,<span class="keyword">...</span>
                       <span class="string">'unknown selection type, need to add ui type to be renamed to the callback function'</span>);
             <span class="keyword">end</span>
         <span class="keyword">end</span>
-        <span class="keyword">function</span> deleteDlg(~,menu,~)
+        <span class="keyword">function</span> deleteDlg(obj,menu,~)
         <span class="comment">% deleteDlg function for deleting tabs and plots.  Double checks</span>
         <span class="comment">% with the user if a plot already exists.</span>
         <span class="comment">%  menu</span>
-<span class="comment">%         delete();</span>
+<span class="comment">%         h = warndlg(['The tab "'</span>
+<span class="comment">%             h_dlg = warndlg({'The following tab will be deleted:'; menu.Parent.UserData.Title}, 'Delete Tab Warning','modal');</span>
+<span class="comment">%             choice = questdlg({'The following tab will be deleted:'; menu.Parent.UserData.Title},'Delete Warning','OK','cancel','cancel')</span>
+<span class="comment">%             switch choice</span>
+<span class="comment">%                 case 'OK'</span>
+<span class="comment">%             if(find(menu.UserData.Parent.Children == menu.UserData)  == length(menu.UserData.Parent.Children)-1)</span>
+<span class="comment">%                 selectPrevTabFcn = menu.UserData.Parent.Children(end-2).ButtonDownFcn;</span>
+<span class="comment">%             else</span>
+<span class="comment">%                 selectPrevTabFcn = @(x)(1);</span>
+<span class="comment">%             end</span>
+            delete(menu.Parent.UserData);
+            <span class="keyword">if</span>(length(obj.gct.Parent.Children)&gt;1 &amp;&amp; find(obj.gct == obj.gct.Parent.Children) == length(obj.gct.Parent.Children))
+                obj.gct.Parent.SelectedTab = obj.gct.Parent.Children(end-1);
+            <span class="keyword">end</span>
+<span class="comment">%             selectPrevTabFcn();</span>
+<span class="comment">%             end</span>
+
+<span class="comment">%             x =0;</span>
+<span class="comment">%             if(isvalid(h_dlg))</span>
+<span class="comment">%                 delete(menu.Parent.UserData);</span>
+<span class="comment">%             end</span>
 <span class="comment">%             type = get(menu.Parent.UserData,'Type');</span>
 <span class="comment">%             if(strcmpi(type,'uicontrol'))</span>
 <span class="comment">%</span>
@@ -579,8 +716,26 @@ function.</pre><p>INPUTS  title_tab1 - The title of the first tab to be added. (
 <span class="comment">%             end</span>
         <span class="keyword">end</span>
     <span class="keyword">end</span>
+    methods (Access = private, Static = true)
+        <span class="keyword">function</span> children = childReorder(children,order)
+        <span class="comment">% childReorder reorders the children of tabs or plot lists</span>
+        <span class="comment">%</span>
+        <span class="comment">% INPUTS</span>
+        <span class="comment">%  children -</span>
+        <span class="comment">%  Order - sets the an integer between 1 and length(children)+1 that</span>
+        <span class="comment">%  specifies its index.  If order is empty, the first child is</span>
+        <span class="comment">%  moved to the last child</span>
+        <span class="comment">%</span>
+        <span class="comment">%</span>
+            <span class="keyword">if</span>(isempty(order) || (order &gt;= length(children)+1))
+                children = children([2:end 1]);
+            <span class="keyword">elseif</span>((order &gt; 1) &amp;&amp; (order &lt; length(children)))
+                children = children([2:order 1 (order+1):end]);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
 </pre><pre class="codeinput"><span class="keyword">end</span>
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 classdef tfigure < hgsetget
     %% TFIGURE 
@@ -589,63 +744,55 @@ classdef tfigure < hgsetget
     % to group plots.  Each tab contains a list of plots that can be
     % selected using buttons on the left of the figure.
     %    
-    %   Example
-    %    h = tfigure;
-    %    h = tfigure('Tab_title');
+    % Example
+    %  h = tfigure;
+    %  h = tfigure('Tab_title');
     %
     % tfigure Properties:
     %  fig - Handle to the figure that displays tfigure.
     %  tabs - Handles to each of the tfigure's tabs
     %  figureSize - Current size of the figure containing tfigure
+    %  gct - get current tab
+    %  gcp - get current panel
     %
     % tfigure Methods:
     %  tfigure - Constructs a new tabbed figure
     %  addTab - Adds a new tab
     %  addPlot - Adds a new plot to the given tab
+    %  addTable - Adds a table to the plot list
+    %  addLabel - Adds a label to the plot list
+    %  addCtrl - Adds a control panel to the plot list
     %  savePPT - Saves all plots to a Power Point presentation.
     %
     % Examples:
     %  tFigExample - tfigure example
     %
-    % TO DO:
+    % SETUP:
+    %  Files that can be downloaded from the MATLAB file exchange
+    %  exportToPPTX - Required to export to a pptx presentation
+    %   <https://www.mathworks.com/matlabcentral/fileexchange/40277-exporttopptx>
     %
-    % * Export Menu
-    %  * ppt, pictures, figures, copy image to clipboard
-    %  * Add support for using a ppt template
-    % * Control View
-    %   * Ability to add a button to the plot list to select a control
-    %    panel view in that tab.
-    % * Plot List
-    %    * Be able to add text Labels to group plots
-    %    * Be able to move plots up or down using mouse or a keyboard
-    %    shortcut
-    %    * Function to add a "Add Plot" button to the plot list GUI
-    % * Plot Context Menu
-    %    * uicontextmenu
-    %    * delete plot
-    %    * Reorder plot
-    % * Tab Bar
-    %    * "Add Tab" tab with a "+" label to create a new tab
-    % * Tab Context Menu
-    %    * change tab name using inputdlg function
-    %    * delete tab
-    %    * Reorder tab
+    % See issues in Github:
+    % <https://github.com/curtisma/MATLAB_tfigure/issues>
     %    
     % Author: Curtis Mayberry
     % Curtisma3@gmail.com
     % Curtisma.org
     %
-    % See Also: tFigExample
+    % See Also: tFigExample, tfigure.tfigure
     
     %% *Properties*
     % Class properties
     properties
         fig % Handle to the figure that displays tfigure.
-        tabs % Handles to each of the tfigure's tabs
+%         tabs % Handles to each of the tfigure's tabs
         menu % Tfigure menu
     end
     properties (Dependent)
+        tabs % Handles to each of the tfigure's tabs
         figureSize % Current size of the figure containing tfigure
+        gct % Get Current Tab
+        gcp % Get Current Panel
     end
     properties (Access = private)
         tabGroup
@@ -659,9 +806,16 @@ classdef tfigure < hgsetget
         %  function.  Plots can be added to each tab by using the addPlot
         %  function.
         %
-        % INPUTS
-        %  title_tab1 - The title of the first tab to be added. (optional)
+        %  h = tfigure;
+        %   Creates a tfigure object
+        %  h2 = tfigure('Data Tab #1');
+        %   Creates a tfigure object with "Data Tab #1" as the tab title.
         %
+        % INPUTS
+        %  title_tab1 - (optional) The title of the first tab to be added.
+        % OUTPUTS
+        %  h - a tfigure object
+        % 
         % see also: tFigExample
         %
         	obj.fig = figure('Visible','off',...
@@ -669,37 +823,61 @@ classdef tfigure < hgsetget
                              'Interruptible','off'); 
             obj.tabGroup = uitabgroup('Parent', obj.fig);
             if(nargin>0)
-                obj.addTab(varargin{1});
+                obj.addTab(varargin{:});
             else
                 obj.addTab;
             end
 %             obj.menu = uimenu(obj.fig,'Label','Tfigure');
             obj.menu = uimenu(obj.fig,'Label','Export');
             uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
+            uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
+            
+            uitab('Parent', obj.tabGroup,'Title','+',...
+                  'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
+            
+            % Add '+' addTab button
+            
             obj.fig.Visible = 'on';
 %             h_add = obj.addTab('+');
 %             h_add.ButtonDownFcn = @(x) obj.addTab([],'order',length(obj.tabs)-1);
         end
-        function out = get.figureSize(obj)
-            out = get(obj.fig,'position');
-        end
-        function set.figureSize(obj,val)
-            set(obj.fig,'position',val);
-        end
         function h = addTab(obj,varargin)
-        %% addTab([title]) 
+        %% addTab
         % Adds a new tab with the given title.
         %
-        % USAGE:
-        %  tfig.addTab(title);
+        %  ht = h.addTab([title],'Param','ParamValue',...);
         %
-            p = inputParser;
-            addOptional(p,'titleIn',...
+        % INPUTS
+        %  title - (optional) name of the tab
+        % PARAMETERS
+        %  order - Specifies the tab order
+        %  listName - The plot list title listed at the top
+        %   Defaults to 'Plots'
+        % OUTPUTS
+        %  ht - uitab handle of the added tab
+        %
+        % See also: tfigure, tfigure.tfigure, tfigure.addPlot,
+        % tfigure.addTable
+            if(~isempty(varargin) && (isa(varargin{1},'matlab.ui.container.Menu') || isa(varargin{1},'matlab.ui.container.Tab')))
+            % Menu Call or '+' Tab call
+            % When called from the menu there is automatically 2
+            % inputs, the menu and the eventData
+                p.Results.titleIn = ['dataset ' num2str(length(obj.tabs)+1)];
+                p.Results.order = [];
+                p.Results.listName = 'Plots';
+            else
+            % User Call
+                p = inputParser;
+                addOptional(p,'titleIn',...
                         ['dataset ' num2str(length(obj.tabs)+1)],@isstr);
-            p.addParameter('order',[], ...
+                p.addParameter('order',[], ...
                              @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
-            parse(p,varargin{:});
+                p.addParameter('listName','Plots', @ischar)
+                parse(p,varargin{:});
+                
+            end
+            
             order = p.Results.order;
             
             % Setup tab
@@ -707,12 +885,10 @@ classdef tfigure < hgsetget
                       'Title', p.Results.titleIn,'ButtonDownFcn',@obj.selectTab);
             
             % Setup tab order
-            if(isempty(order))
-                obj.tabs(end+1) = h;
-            else
-                obj.tabs((order+1):end+1) = obj.tabs(order:end);
-                obj.tabs(order) = h;
-                if(order == 1)
+            if(isempty(order) && length(obj.tabGroup.Children)>1)
+                obj.tabGroup.Children = obj.tabGroup.Children([1:end-2 end end-1]);
+            elseif(~isempty(order))
+                if(order <= 1)
                     obj.tabGroup.Children = obj.tabGroup.Children([end 1:end-1]);
                 elseif((order > 1) && (order < length(obj.tabGroup.Children)))
                     obj.tabGroup.Children = obj.tabGroup.Children([1:(order-1) end (order):end-1]);
@@ -723,16 +899,28 @@ classdef tfigure < hgsetget
             c = uicontextmenu;
             c.UserData = h;
             h.UIContextMenu = c;
-            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
-            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
+            uimenu(c,'Label','Add Tab','Callback',@obj.addTab);
+            uimenu(c,'Label','Add Plot','Callback',@obj.addPlot);
+            uimenu(c,'Label','Add Table','Callback',@obj.addTable);
+            uimenu(c,'Label','Rename','Callback',@obj.renameDlg,'Separator','on');
+            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg,'UserData',h);
             
             % Setup plot list
             figSize = obj.figureSize;
-            plotList = uibuttongroup('parent',h,'Title','Plots',...
+            plotList = uibuttongroup('parent',h,...
                             'Units','pixels',...
                             'Position',[10 10  150 figSize(4)-45],...
                             'tag','plotList',...
                             'SelectionChangedFcn',@obj.selectPlot);
+            set(plotList,'Title',p.Results.listName);
+            
+            % Menu
+            plotList.UIContextMenu = uicontextmenu;
+            plotList.UIContextMenu.UserData = plotList;
+            uimenu(plotList.UIContextMenu,'Label','Add Plot','Callback',@obj.addPlot);
+            uimenu(plotList.UIContextMenu,'Label','Add Table','Callback',@obj.addTable);
+            uimenu(plotList.UIContextMenu,'Label','Add Label','Callback',@obj.addLabel);
+            uimenu(plotList.UIContextMenu,'Label','Rename','Callback',@obj.renameDlg,'Separator','on');
             h.UserData = plotList;
             if(length(plotList.Children) <= 1)
                 plotList.Visible = 'off';
@@ -740,23 +928,46 @@ classdef tfigure < hgsetget
             % Make the new tab current
             obj.tabGroup.SelectedTab = h;
         end
-        function h = addPlot(obj,varargin)
-        %% addPlot([tab],'title',[title],'plotFcn',[function_handle]) 
+        function ha = addPlot(obj,varargin)
+        %% addPlot 
         % Adds a plot to the given tab.  
-        %  When the button is selected the plotting routine given by
-        %  plotFcn is ran.
-        %  
+        %  When the plot button is selected the plot is selected
+        %
+        % ha = h.addPlot([title],'tab',[h_tab],'plotFcn',[function_handle])
+        %
+        % INPUTS
+        %  title - (optional) Uses this string as the plot title displayed 
+        %   in the plot list
+        % PARAMETERS
+        %  tab - Selects which tab will contain the table.  The tab can be
+        %   specified as a uitab handle or the name of the tab
+        %  plotFcn - A function handle to be evaluated when the plot is
+        %   selected.
+        % OUTPUTS
+        %  ha - Handle to the plot axis
+        % EXAMPLE
+        %  h = tfigure;
+        %  ha = h.addPlot('Plot Title');
+        % 
+        % see also: tfigure, tfigure.tfigure, tfigure.addTab,
+        % tfigure.addTable
+        if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
             p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addOptional('title','plot',@ischar)
             p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
-            p.addParameter('title','plot',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
             p.addParameter('order',[],@isnumeric);
             p.parse(varargin{:})
-            
+        else
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.plotFcn = [];
+            p.Results.title = 'plot';
+            p.Results.order = [];
+        end
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
             
-            % Add the new plot to the plot list
+            % Add the new analysis panel to the plot list
             plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             h = uicontrol('parent',plotList,...
                           'Style', 'togglebutton',...
@@ -769,40 +980,148 @@ classdef tfigure < hgsetget
             h.UIContextMenu = c;
             uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
-            
+            exportMenu = uimenu('Parent',c,'Label','Export');
+            uimenu(exportMenu,'Label','Copy to Clipboard','Callback',@obj.exportToClipboard);
+            uimenu(exportMenu,'Label','Copy to Figure','Callback',@obj.exportToFigure);
+            % Setup Panel
+            h.UserData.hp = uipanel('Parent',tab,'Units','pixels',...
+                                    'tag','plot','BorderType','none');
+            h.UserData.hp.UserData.hc = h;
+
             % Setup Axes
-            h.UserData.fa = axes('Parent',tab,'Units','pixels',...
-...%                              'position',axesSize,...
-                             'ActivePositionProperty','OuterPosition');
-            h.UserData.fa.Visible = 'on';
+            ha = axes(h.UserData.hp);%,...'Units','pixels',...
+%                              'ActivePositionProperty','OuterPosition');
+            ha.Visible = 'on';
             
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
             
             if(~isempty(p.Results.plotFcn))
                 h.UserData.fh = p.Results.plotFcn;
                 p.Results.plotFcn();
+            else
+                h.UserData.fh = [];
             end
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
         end
-        function h = addLabel(obj,title,varargin)
+        function varargout = addTable(obj,varargin)
+        %% addTable
+        % Adds a table to the given tab.
+        %
+        % ht = h.addTable([title],'Param','ParamValue',...)
+        %
+        % INPUTS
+        %  title - (optional) The table title to displayed on the selection
+        %   button
+        % PARAMETERS
+        %  tab - Selects which tab will contain the table.  The tab can be
+        %   specified as a uitab handle or the name of the tab
+        %  order - Position in the plot list
+        %  style - Selects between the default MATLAB table and a Java
+        %   table. uitable: 'uitable or 'ui'  Java Table: 'Java',
+        %   'JavaTable'
+        % OUTPUTS
+        %  ht - handle to the table
+        %
+        % See also: tfigure.addPlot tfigure.addLabel tfigure.addCtrl
+        if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+            p=inputParser;
+            p.addOptional('title','table',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addParameter('order',[],@isnumeric);
+            p.addParameter('style','uitable',...
+                @(x) any(validatestring(x,{'uitable','ui','JavaTable','Java'})))
+            p.parse(varargin{:})
+        else
+            p.Results.tab = obj.tabGroup.SelectedTab;
+            p.Results.title = 'table';
+            p.Results.order = [];
+            p.Results.style = 'uitable';
+        end
+            % Select the Tab
+            tab = obj.parseTab(p.Results.tab);
+            
+            % Add the new plot to the plot list
+            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
+            h = uicontrol('parent',plotList,...
+                            'Style', 'togglebutton',...
+                            'String', p.Results.title,'Units','pixels',...
+                            'tag','table');
+%             h.UserData = p.Results.fun_handle;
+            
+            % Setup Context Menu
+            c = uicontextmenu;
+            c.UserData = h;
+            h.UIContextMenu = c;
+            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
+            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
+            
+            % Setup Panel
+            h.UserData.hp = uipanel('Parent',tab,'Units','pixels',...
+                                    'tag','plot','BorderType','none');
+            h.UserData.hp.UserData.hc = h;
+            h.UserData.fh = [];
+            
+            % Setup Table
+            if(strcmpi(p.Results.style,'uitable') || strcmpi(p.Results.style,'ui'))
+                ht = uitable('Parent',h.UserData.hp,'Units','normalized','Position',[0 0 1 1]);%,'Units','pixels');
+            elseif(strcmpi(p.Results.style,'JavaTable') || strcmpi(p.Results.style,'java'))
+                if(~(exist('exportToPPTX','file')))
+                    error('tfigure:NeedExportToPPTX',...
+                         ['createTable must be added to the path. ',...
+                        'It can be downloaded from the MATLAB file exchange, search for "Java-based data table"']);
+                end
+                ht = uiextras.jTable.Table('Parent',h.UserData.hp);
+            end
+            %             h.UserData.fa.Visible = 'on';   
+            h.UserData.hp.UserData.hc = ht;
+            
+            % Setup order
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+            
+            plotList.SelectedObject = h;
+            obj.selectPlot(plotList,[]);
+            
+            % Setup outputs
+            if(nargout == 0)
+                varargout = {};
+            elseif(nargout == 1)
+                varargout = {ht};
+            elseif(nargout == 2)
+                varargout = {ht h};
+            else
+                error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
+            end
+        end
+        function h = addLabel(obj,varargin)
         %% addLabel Adds a label to the plot list
         %
-        % USAGE:
-        %  h.addLabel(title,[tab],...)
+        %  hl = h.addLabel(title,[tab],...)
         %  
-            p=inputParser;
-            p.addRequired('title',@ischar);
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
-            p.addParameter('order',[],@isnumeric);
-            p.parse(title,varargin{:})
+        % INPUTS
+        %  title - text to display
+        % PARAMETERS
+        %  title - text to display
+        %  order - Position in the plot list
+        %  tab - Selects which tab will contain the table.  The tab can be 
+        %   specified as a uitab handle or the name of the tab 
+        % OUTPUTS
+        %  hl - label handle
+        %
+        % see also: tfigure, tfigure.tfigure, tfigure.addTab,
+        % tfigure.addTable
+            if(~isempty(varargin) && ~isa(varargin{1},'matlab.ui.container.Menu'))
+                p=inputParser;
+                p.addRequired('title',@ischar);
+                p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+                p.addParameter('order',[],@isnumeric);
+                p.parse(varargin{:})
+            else
+                p.Results.title = inputdlg('Label:','Label',1,{''});
+                p.Results.tab = obj.tabGroup.SelectedTab;
+                p.Results.order = [];
+            end
             
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
@@ -822,28 +1141,36 @@ classdef tfigure < hgsetget
             uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
             
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+            
+            obj.selectPlot(plotList,[]);
         end
         function h = addCtrl(obj,varargin)
-        %% addCtrl([tab],[fun_handle(h_panel)],'title',[title]) 
-        % Adds a control item to the given tab.  
-        % When the button is selected the control panel given by
-        % fun_handle is displayed.
-        % 
-        % fun_handle has a single input that is a handle to the panel that
-        % will contain the control panel.
-        %  
+        %% addCtrl
+        % Adds a control panel to a tab
+        %  Requires a fun_handle which points to the control panel function
+        %  which defines its contents
+        %
+        %  hp = h.addCtrl([title],[fun_handle(h_panel)],'Param','value') 
+        % INPUTS
+        %  title - (optional) text of the control's plot list button
+        %  fun_handle - (optional) A function that defines the control panel.  It has 
+        %   a single input that is a handle to the panel that will contain 
+        %   the control panel.
+        % PARAMETERS
+        %  order - Position in the plot list
+        %  tab - Selects which tab will contain the table.  The tab can be 
+        %   specified as a uitab handle or the name of the tab 
+        % OUTPUTS
+        %   hp - handle for the control panel's plot list button
+        %
+        % See also: tfigure, tfigure.tfigure
             p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addOptional('title','Options',@ischar);
             p.addOptional('fun_handle',[],@(x) isa(x,'function_handle'));
-            p.addParameter('title','Options',@ischar)
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
             p.addParameter('order',[],@isnumeric);
-            p.parse(varargin{:})
+            p.parse(varargin{:});
             
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
@@ -859,8 +1186,9 @@ classdef tfigure < hgsetget
             h_panel = uipanel('Parent',tab,...
                               'Units','pixels',...
                               'Position',[30 30  figSize(3)-30 figSize(4)-30],...
+                              'tag','ctrl',...
                               'Title',p.Results.title);
-            h.UserData.fa = h_panel;
+            h.UserData.hp = h_panel;
             
             % Setup Context Menu
             c = uicontextmenu;
@@ -874,13 +1202,7 @@ classdef tfigure < hgsetget
 %             h.UserData.fa.Visible = 'on';           
 
             % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
-            end
-
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
 
             if(~isempty(p.Results.fun_handle))
                 h.UserData.fh = p.Results.fun_handle;
@@ -889,69 +1211,110 @@ classdef tfigure < hgsetget
             plotList.SelectedObject = h;
             obj.selectPlot(plotList,[]);
         end
-        function varargout = addTable(obj,varargin)
-        %% addTable 
-        % Adds a table to the given tab.
+        %function export(obj,varargin)
+        % export Exports an analysis panel, a tab, or an entire tfigure using
+        % the specified format
         %
-        % h.addTable([tab])
+        % Not currently implemented
+        %end
+        function exportToClipboard(obj,varargin)
+        %% exportToClipboard 
+        % Exports a panel to the clipboard as if it it were in its own 
+        % figure
         %
+        % obj.exportToClipboard([panel]
         %
-            p=inputParser;
-            p.addOptional('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
-            p.addParameter('title','plot',@ischar)
-            p.addParameter('order',[],@isnumeric);
-            p.parse(varargin{:})
-            
-            % Select the Tab
-            tab = obj.parseTab(p.Results.tab);
-            
-            % Add the new plot to the plot list
-            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
-            h = uicontrol('parent',plotList,...
-                            'Style', 'togglebutton',...
-                            'String', p.Results.title,'Units','pixels',...
-                            'tag','table');
-%             h.UserData = p.Results.fun_handle;
-            
-            % Setup Context Menu
-            c = uicontextmenu;
-            c.UserData = h;
-            h.UIContextMenu = c;
-            uimenu(c,'Label','Rename','Callback',@obj.renameDlg);
-            uimenu(c,'Label','Delete','Callback',@obj.deleteDlg);
-            
-            % Setup Table
-            h.UserData.fa = uitable('Parent',tab,'Units','pixels');
-            h.UserData.fa.Visible = 'on';   
-            
-            % Setup order
-            order = p.Results.order;
-            if(isempty(order) || (order == length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:end 1]);
-            elseif((order > 1) && (order < length(obj.tabGroup.Children)))
-                plotList.Children = plotList.Children([2:(order-1) 1 (order):end]);
+        % INPUTS
+        %  panel - (optional) a panel handle to be exported
+        %   Uses the current panel (obj.gcp) by default
+        %
+        % See also: tfigure, tfigure.tfigure
+            if(nargin == 2)
+                p = inputParser;
+                p.addOptional('panel',obj.gcp,@(x) strcmp(x.Type,'uipanel'))
+                p.parse(varargin{:});
+            elseif(nargin == 3)
+                if(~isempty(varargin{1}.Parent.UserData) && strcmp(varargin{1}.Parent.UserData.Type,'uicontrol'))
+                    p.Results.panel = varargin{1}.Parent.UserData.UserData.hp;
+                else
+                    p.Results.panel = obj.gcp;
+                end
+            else
+                p.Results.panel = obj.gcp;
+            end
+
+            % Copy the panel to a seperate figure and copy tp clipboard
+            hf = figure('Visible','off','Color','w');
+            hp = copy(p.Results.panel);
+            hp.Parent = hf;
+            hp.BackgroundColor = 'w';
+            hp.Units = 'normalized';
+            hp.Position = [0 0 1 1];
+            hp.Visible = 'on';
+            print(hf,'-clipboard','-dbitmap')
+            close(hf);
+        end
+        function varargout = exportToFigure(obj,varargin)
+        % exportToFigure Copies a panel to a new figure
+        % 
+        % USAGE:
+        %  hf = h.exportToFigure
+        %  hf = exportToFigure(h)
+        %   Copies current panel (h.gcp) to a new figure with handle hf
+        %  hf = h.exportToFigure(panel)
+        %   Copies panel (panel) to a new figure with handle hf
+        %
+        % INPUTS
+        %  panel - (optional) a panel handle to be exported
+        %   Uses the current panel (obj.gcp) by default
+        % OUTPUTS
+        %  hf - a handle to the newly created figure
+        %
+        % See also: tfigure, tfigure.tfigure
+            if(nargin == 1)
+                panel = obj.gcp;
+            elseif(isa(varargin{1},'matlab.ui.container.Panel'))
+                panel = varargin{1};
+            elseif(nargin == 3 && isa(varargin{1},'matlab.ui.container.Menu'))
+            % Callback
+                panel = varargin{1}.Parent.Parent.UserData.UserData.hp;
+            else
+                panel = obj.gcp;
             end
             
-            plotList.SelectedObject = h;
-            obj.selectPlot(plotList,[]);
-            
-            % Setup outputs
-            if(nargout == 0)
-                varargout = {};
-            elseif(nargout == 1)
-                varargout = {h.UserData.fa};
-            elseif(nargout == 2)
-                varargout = {h.UserData.fa h};
+            if(nargin>2 && ~isa(varargin{1},'matlab.ui.container.Menu'))
+                h = figure(varargin{2:end});
             else
-                error('tfigure:addTable:nargoutWrong','The number of outputs must be 0-2');
+                h = figure;
+            end
+            hp = copy(panel);
+            hp.Units = 'normalized';
+            hp.Position = [0 0 1 1];
+            hp.Parent = h;
+            hp.Visible = 'on';
+            if(nargout == 1)
+                varargout{1} = h;
+            elseif(nargout == 2)
+                varargout = {h hp};
             end
         end
         function savePPT(obj,varargin)
         %% savePPT 
         % Saves all the plots in tfigure to a powerpoint presentation.  
         % 
-        % h.savePPT
+        % h.savePPT(...)
+        %  Brings up a file selection dialog
+        % h.savePPT(fileName,...)
         %
+        % FILENAME
+        %  fileName - file name of the file to save the plots
+        % PARAMETERS:
+        %  title - Title of the presentation
+        %  subject - subject of presentation, included in file meta data
+        %  comments - comments on the presentation
+        %  author - Author's name
+        %
+        % See also: tfigure, tfigure.tfigure
             if(~(exist('exportToPPTX','file')))
                error('tfigure:NeedExportToPPTX',...
                      ['exportToPPTX must be added to the path. ',...
@@ -971,7 +1334,11 @@ classdef tfigure < hgsetget
             p.parse(varargin{:});
             if(isempty(p.Results.fileName))
                 [fileName,pathname] = uiputfile('.pptx','Export PPTX: select a file name');
-                fileName = fullfile(pathname,fileName);
+                if(fileName ~= 0)
+                    fileName = fullfile(pathname,fileName);
+                else
+                    return
+                end
             else
                 fileName = p.Results.fileName;
             end
@@ -989,24 +1356,18 @@ classdef tfigure < hgsetget
             exportToPPTX('addtext',p.Results.title,...
                          'HorizontalAlignment','center',...
                          'VerticalAlignment','middle','FontSize',48);
-            numTabs = length(obj.tabs);
-            summary = findobj(obj.tabs,'Title','Summary');
-            if(~isempty(summary))
-                startTab = 2;
-            else
-                startTab = 1;
-            end
-            for tabNum = startTab:numTabs
-                ht = get(obj.tabs(tabNum));
-                hp = findobj(ht.Children,'tag','plot');
+            for tabNum = 1:length(obj.tabs)
+                ht = obj.tabs(tabNum);
+%                 hp = findobj(ht.Children,'tag','plot');
                 exportToPPTX('addslide');
                 exportToPPTX('addtext',ht.Title,...
                              'HorizontalAlignment','center',...
                              'VerticalAlignment','middle','FontSize',48);
-                for plotNum = 1:length(hp)
-                    h = figure('Position',obj.fig.Position,...
-                               'Color',[1 1 1],'Visible','off');
-                    hp(plotNum).UserData();
+                panels = [ht.UserData.Children.UserData];
+                panels = [panels.hp];
+                for panelNum = 1:length(panels)
+                    [h hp] = obj.exportToFigure(panels(panelNum),'Visible','off');
+                    hp.BackgroundColor = 'w';
                     exportToPPTX('addslide');
                     exportToPPTX('addpicture',h,'Scaled','maxfixed');
                     close(h);
@@ -1015,6 +1376,32 @@ classdef tfigure < hgsetget
             exportToPPTX('save',fileName);
             exportToPPTX('close');
         end
+        function out = get.figureSize(obj)
+            out = get(obj.fig,'position');
+        end
+        function set.figureSize(obj,val)
+            set(obj.fig,'position',val);
+        end
+        function h = get.gct(obj)
+        % gct Get Current Tab
+        %  Returns the handle to the current tab
+        h = obj.tabGroup.SelectedTab;
+        end
+        function h = get.gcp(obj)
+        % gcp Get Current Panel
+        %  Returns the handle to the current tab
+            if(~isempty(obj.gct.UserData.SelectedObject))
+                h = obj.gct.UserData.SelectedObject.UserData.hp;
+            else
+                h = [];
+            end
+        end
+        function t = get.tabs(obj)
+            t = obj.tabGroup.Children(1:end-1);
+        end
+%         function set.tabs(obj,in)
+%             obj.tabs = [in obj.tabs(end)]
+%         end
     end
     methods (Access = private)
         function figResize(obj,src,~) % callbackdata is unused 3rd arg.
@@ -1032,28 +1419,13 @@ classdef tfigure < hgsetget
 %             obj.figureSize = figSize;
             
             % Find selected tab and plot
-            currTab = obj.tabGroup.SelectedTab;
-            if(~isempty(currTab.UserData.SelectedObject))
-                currPlot = currTab.UserData.SelectedObject;
-                currAxes = currPlot.UserData.fa;
-                numPlots = length(currTab.UserData.Children);
+%             currTab = obj.tabGroup.SelectedTab;
+            if(~isempty(obj.gct.UserData.SelectedObject))
+                numPlots = length(obj.gct.UserData.Children);
             else
-                %currPlot = [];
-                currAxes = [];
                 numPlots = 0;
             end
             
-            % Resize current axes
-            leg_pos = [0 0 0 0];
-            if(~isempty(currAxes) && strcmp(currAxes.Type,'axes'))
-                % Legend Adjustment
-                l = legend;
-                if(~isempty(l))
-                    l.Units = 'pixels';
-                    leg_pos = l.Position;
-                    set(currAxes,'ActivePositionProperty','OuterPosition');
-                end
-            end
             % Plot list adjustment
             if(numPlots==1)
                 plotListAdj = [-160 0 150 0];
@@ -1061,12 +1433,18 @@ classdef tfigure < hgsetget
                 plotListAdj = [0 0 0 0];
             end
 
-            %Resize Current Axes
-            set(currAxes,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110]...
-                                                   - [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
+            %Resize Current "Axes"
+            if(strcmp(get(obj.gcp,'tag'),'ctrl')) % Resize ctrl panels
+                set(obj.gcp,'Units','pixels','Position',[170 10  figSize(3)-185 figSize(4)-45]...
+                                                   ...%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
                                                    + plotListAdj); % Plot list adjustment
+            else % Resize Axes
+            set(obj.gcp,'Units','pixels','Position',[170 10  figSize(3)-185 figSize(4)-45]...
+                                                   ...%- [0 0 ceil(leg_pos(3)) 0]... % Legend Adjustment
+                                                   + plotListAdj); % Plot list adjustment
+            end
             % Resize the plot list
-            plots = currTab.UserData.Children;
+            plots = obj.gct.UserData.Children;
             for n = 1:length(plots)
                 set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
             end
@@ -1074,80 +1452,38 @@ classdef tfigure < hgsetget
             % Resize each list of plots
             plotLists = findobj(src,'tag','plotList','-and',...
                                 'Type','uibuttongroup');
-            set(plotLists,'Units','pixels','Position',[10 10  150 figSize(4)-45])
-%             % Resize each axis
-%             axesList = findobj(src,'Type','axes');
-%             if(~isempty(axesList))
-%                 l = legend;
-%                 if(~isempty(l))
-%                     l.Units = 'pixels';
-%                     leg_pos = l.Position;
-%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110] - [0 0 ceil(leg_pos(3)) 0],'ActivePositionProperty','OuterPosition');
-%                 else
-%                     % TO DO: Add support for single plot tabs
-%                     set(axesList,'Units','pixels','Position',[210 50  figSize(3)-240 figSize(4)-110],'ActivePositionProperty','OuterPosition');
-%                 end
-%             end
-%             % Reposition plot buttons
-%             for i_tab = 1:length(obj.tabs)
-% %                 plots = findobj(obj.tabs(i_tab),'tag','plot','-and',...
-% %                                 'Style','togglebutton');
-%                 plots = get(get(obj.tabs(i_tab),'UserData'),'Children');
-%                 for n = 1:length(plots)
-%                     set(plots(n),'Position',[10 figSize(4)-85-30*(n-1) 120 20]);
-%                 end
-%             end
-            
+            set(plotLists,'Units','pixels','Position',[10 10  150 figSize(4)-45]);
         end
-        function selectPlot(obj,src,~) % ~ is obj and callbackdata          
+        function selectPlot(obj,src,~) % ~ is callbackdata          
         % selectPlot Runs whenever a plot is selected from the plot list
             if(length(src.Children) > 1)
-                visible_plot = findobj(src.Parent.Children,'Visible','on');
-                for i = 1:length(visible_plot)
-                    visible_plot(i).Visible = 'off';
-                end
-                src.SelectedObject.UserData.fa.Visible = 'on';
-                % Turn on plotted material 
-                material = src.SelectedObject.UserData.fa.Children;
-                if(~isempty(material))
-                    for i = 1:length(material)
-                        material(i).Visible = 'on';
-                    end
-                end
-                set(src.Children,'Visible','on');
+                h_panels = [src.Children.UserData];
+                h_panels = [h_panels.hp];
+                set(h_panels,'visible','off')
+                
+                src.SelectedObject.UserData.hp.Visible = 'on';
                 src.Visible = 'on';
-%                 for i = 1:length(src.Children)
-%                       src.Children.
-%                     src.Children(i).UserData.fa.Visible = 'off';
-%                 end
-            else
-%                 axesSize = [50 50 obj.figureSize(3)-90 obj.figureSize(4)-110];
-%                 src.SelectedObject.UserData.fa.Position = axesSize;
+                if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))
+                    axes(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes'));
+                end
             end
-%             if isa(src.SelectedObject.UserData, 'function_handle')
-%                 axes(findobj(src.Parent,'Type','Axes'));
-%                 src.SelectedObject.UserData(); % contains the plot function handle
-%             elseif(isa(src.SelectedObject.UserData,'matlab.graphics.axis.Axes'))
-%                 % Turn off current axes
-%                 h_current = axes(findobj(src.Parent,'Type','Axes','-and',...
-%                                          'Visible','on'));
-%                 h_current.Visible = 'off';
-%                 h_current.children.Visible = 'off';
-%                 % Turn on new axes
-% %                 h_new = 
-%             end
             obj.figResize(obj.fig);
         end
-        function selectTab(obj,~,~)
+        function selectTab(obj,b,c)
             obj.figResize(obj.fig);
+            if(~isempty(obj.gcp) && ...
+               ~isempty(findobj(obj.gcp.Children,'Type','axes')))
+                axes(findobj(obj.gcp.Children,'Type','axes'));
+            end
         end
         function tab_out = parseTab(obj,tab)
         % parseTab - parses a tab input, creating a new tab if the tab
-        %  input is a tab name that doesn't exist.
+        %  input is a tab name that doesn't exist.  Can accept a handle or
+        %  a string input of the tab name.
             if(ischar(tab))
-                tab_obj = findobj(tab,'Type','tab');
+                tab_obj = findobj(obj.tabs,'Type','uitab','Title',tab);
                 if(isempty(tab_obj))
-                    obj.addTab(tab)
+                    tab_out = obj.addTab(tab);
                 else
                     tab_out = tab_obj;
                 end
@@ -1156,7 +1492,8 @@ classdef tfigure < hgsetget
             end
         end
         function exportMenu(obj,menu,~)
-        % Export menu
+        % Export menu callback
+        %  Executes the requested depending on the selected export option
             if(strcmp(menu.Label,'Export PPT'))
                 obj.savePPT();
             end
@@ -1169,28 +1506,70 @@ classdef tfigure < hgsetget
                 prevName = {menu.Parent.UserData.String};
                 % Get new name from the user
                 newName = inputdlg('New Name:','Rename',1,prevName);
-                menu.Parent.UserData.String = newName{1};
-            elseif(strcmpi(type, 'uitab'))
+                if(~isempty(newName))
+                    menu.Parent.UserData.String = newName{1};
+                end
+            elseif(any(strcmpi(type, {'uitab','uibuttongroup'})))
                 prevName = {menu.Parent.UserData.Title};
                 % Get new name from the user
                 newName = inputdlg('New Name:','Rename',1,prevName);
-                menu.Parent.UserData.Title = newName{1};
+                if(~isempty(newName))
+                    menu.Parent.UserData.Title = newName{1};
+                end
             else
                 error('tfigure:renameDlg:unknownSelectionType',...
                       'unknown selection type, need to add ui type to be renamed to the callback function');
             end
         end
-        function deleteDlg(~,menu,~)
+        function deleteDlg(obj,menu,~)
         % deleteDlg function for deleting tabs and plots.  Double checks
         % with the user if a plot already exists.
         %  menu
-%         delete();
+%         h = warndlg(['The tab "'
+%             h_dlg = warndlg({'The following tab will be deleted:'; menu.Parent.UserData.Title}, 'Delete Tab Warning','modal');
+%             choice = questdlg({'The following tab will be deleted:'; menu.Parent.UserData.Title},'Delete Warning','OK','cancel','cancel')
+%             switch choice
+%                 case 'OK'
+%             if(find(menu.UserData.Parent.Children == menu.UserData)  == length(menu.UserData.Parent.Children)-1)
+%                 selectPrevTabFcn = menu.UserData.Parent.Children(end-2).ButtonDownFcn;
+%             else
+%                 selectPrevTabFcn = @(x)(1);
+%             end
+            delete(menu.Parent.UserData);
+            if(length(obj.gct.Parent.Children)>1 && find(obj.gct == obj.gct.Parent.Children) == length(obj.gct.Parent.Children))
+                obj.gct.Parent.SelectedTab = obj.gct.Parent.Children(end-1);
+            end
+%             selectPrevTabFcn();
+%             end
+            
+%             x =0;
+%             if(isvalid(h_dlg))
+%                 delete(menu.Parent.UserData);
+%             end
 %             type = get(menu.Parent.UserData,'Type');
 %             if(strcmpi(type,'uicontrol'))
 %                 
 %             else
 %                 
 %             end
+        end
+    end
+    methods (Access = private, Static = true)
+        function children = childReorder(children,order)
+        % childReorder reorders the children of tabs or plot lists
+        %
+        % INPUTS
+        %  children - 
+        %  Order - sets the an integer between 1 and length(children)+1 that 
+        %  specifies its index.  If order is empty, the first child is 
+        %  moved to the last child
+        %
+        %
+            if(isempty(order) || (order >= length(children)+1))
+                children = children([2:end 1]);
+            elseif((order > 1) && (order < length(children)))
+                children = children([2:order 1 (order+1):end]);
+            end
         end
     end
 end

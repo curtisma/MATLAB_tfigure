@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tFigExample</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-17"><meta name="DC.source" content="tFigExample.m"><style type="text/css">
+      --><title>tFigExample</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-06-26"><meta name="DC.source" content="tFigExample.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Start a new tfigure</a></li><li><a href="#4">The first tab will contain a single plot</a></li><li><a href="#5">Create the second tab</a></li><li><a href="#6">Create the Third tab</a></li><li><a href="#7">Create the Fourth tab</a></li><li><a href="#8">Add a Control tab as the first tab</a></li><li><a href="#9">Plotting functions</a></li><li><a href="#10">Control functions</a></li><li><a href="#11">ctrlExample</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> h = tFigExample
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Start a new tfigure</a></li><li><a href="#4">The first tab will contain a single plot</a></li><li><a href="#5">Create the second "Exponential" tab</a></li><li><a href="#6">Create the Third "Random" tab</a></li><li><a href="#7">Add a Control tab as the first tab</a></li><li><a href="#8">Create the fifth tab</a></li><li><a href="#9">Plotting functions</a></li><li><a href="#10">Control functions</a></li><li><a href="#11">ctrlExample</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> h = tFigExample
 </pre><pre class="codeinput"><span class="comment">%%tFigExample An example showing how to use tfigure.</span>
 <span class="comment">% It makes a single tfigure with 2 tabs and several plots per tab.</span>
 <span class="comment">%</span>
@@ -74,32 +74,54 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">% Curtisma3@gmail.com</span>
 <span class="comment">% Curtisma.org</span>
 <span class="comment">%</span>
-<span class="comment">% see also: tfigure</span>
+<span class="comment">% see also: tfigure, tfigure.tfigure</span>
 close <span class="string">all</span>;
 </pre><h2>Start a new tfigure<a name="3"></a></h2><p>Creates a new tfigure and defines the first tab's plots</p><pre class="codeinput">h = tfigure;
-</pre><h2>The first tab will contain a single plot<a name="4"></a></h2><pre class="codeinput">h.addPlot(h.tabs,<span class="string">'title'</span>,<span class="string">'Linear'</span>);
-plot(1:10,1:10);
-title(<span class="string">'Linear Test Plot'</span>);
-xlabel(<span class="string">'index'</span>);
-ylabel(<span class="string">'Linear Plot'</span>);
-</pre><h2>Create the second tab<a name="5"></a></h2><p>It will contain a single plot and utilize a function handle to plot</p><pre class="codeinput">h_tab = h.addTab;
+</pre><h2>The first tab will contain a single plot<a name="4"></a></h2><pre class="codeinput">h.addPlot(<span class="string">'Normal'</span>);
+y = -10:0.5:10;
+x = -10:0.5:10;
+[X, Y] = meshgrid(x, y);
+Z = sin(sqrt(X.^2+Y.^2)) ./ sqrt(X.^2+Y.^2); <span class="comment">% Create the function values for Z = f(X,Y)</span>
+surfc(X, Y, Z);
+view(-38, 18) <span class="comment">% Adjust the view angle</span>
+title(<span class="string">'Normal Response'</span>);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+zlabel(<span class="string">'z'</span>);
+</pre><h2>Create the second "Exponential" tab<a name="5"></a></h2><p>It will contain a single plot and utilize a function handle to plot</p><pre class="codeinput">h_tab = h.addTab;
 h_tab.Title = <span class="string">'Exponential'</span>;
-h.addPlot(h.tabs(2),<span class="string">'plotFcn'</span>,@() plot(1:20,exp(1:20)),<span class="string">'title'</span>,<span class="string">'Linear FH'</span>);
-</pre><h2>Create the Third tab<a name="6"></a></h2><p>It will contain 2 plots.  The first plot will be created using the plotting routine plotExample.</p><pre class="codeinput">h.addTab(<span class="string">'Random Tab'</span>);
-h.addPlot(h.tabs(3),<span class="string">'plotFcn'</span>,@plotExample,<span class="string">'title'</span>,<span class="string">'Random'</span>); <span class="comment">% The plotExample plotting routine is defined below.</span>
-h.addPlot(h.tabs(3));
-plot(1:10,rand(1,10));
-</pre><h2>Create the Fourth tab<a name="7"></a></h2><p>The Fourth tab will have the title Test Tab and contain 3 plots.</p><pre class="codeinput">h.addTab(<span class="string">'Test Tab'</span>);
-h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:5,1:5));
-h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:20,1:20),<span class="string">'title'</span>,<span class="string">'Linear 10'</span>);
-h.addPlot(h.tabs(4),<span class="string">'plotFcn'</span>,@() plot(1:10,rand(1,10)),<span class="string">'title'</span>,<span class="string">'Random'</span>);
+h.addPlot(<span class="string">'Linear FH'</span>,<span class="string">'tab'</span>,h.gct);
+plot(1:20,exp(1:20));
+</pre><h2>Create the Third "Random" tab<a name="6"></a></h2><p>It will contain 2 plots.  The first plot will be created using the plotting routine plotExample.</p><pre class="codeinput">h.addTab(<span class="string">'Random Tab'</span>);
+h.addPlot(<span class="string">'Random'</span>,<span class="string">'plotFcn'</span>,@plotExample,<span class="string">'title'</span>,<span class="string">'Random'</span>); <span class="comment">% The plotExample plotting routine is defined below.</span>
+
+h.addPlot(<span class="string">'Heart'</span>);
+x=(-2:.001:2); y=real((sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01); plot(x,y);
+title(<span class="string">'Love'</span>);
+xlabel(<span class="string">'time (yrs)'</span>);
+ylabel(<span class="string">'Feeling'</span>);
+
+h.addPlot(<span class="string">'Wolf'</span>,<span class="string">'tab'</span>,h.gct);
+spy;
+
+<span class="comment">% Add a Label</span>
 h.addLabel(<span class="string">'Tables'</span>);
-ht = h.addTable(h.tabs(4),<span class="string">'title'</span>,<span class="string">'Table'</span>);
+
+ht = h.addTable(<span class="string">'Table'</span>);
 ht.ColumnName = {<span class="string">'X-Data'</span>, <span class="string">'Y-Data'</span>, <span class="string">'Z-Data'</span>};
 ht.Data = rand(3);
-</pre><h2>Add a Control tab as the first tab<a name="8"></a></h2><pre class="codeinput">tab1 = h.addTab(<span class="string">'Control'</span>,<span class="string">'order'</span>,1);
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<span class="string">'Data Selection'</span>);
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<span class="string">'Scripts'</span>);
+</pre><h2>Add a Control tab as the first tab<a name="7"></a></h2><pre class="codeinput">tab1 = h.addTab(<span class="string">'Control'</span>,<span class="string">'order'</span>,1);
+h.addCtrl(<span class="string">'Data Selection'</span>,@(x) ctrlExample(tab1,x),<span class="string">'tab'</span>,tab1);
+h.addCtrl(<span class="string">'Scripts'</span>,@(x) ctrlExample(tab1,x),<span class="string">'tab'</span>,tab1);
+</pre><h2>Create the fifth tab<a name="8"></a></h2><p>Tests subplots</p><pre class="codeinput">h.addTab(<span class="string">'Test Subplot'</span>);
+h.addPlot(<span class="string">'subplot 2x1'</span>);
+subplot(2,1,1);
+plot(1:5);
+subplot(2,1,2);
+plot(2:6);
+
+h.addPlot(<span class="string">'subplot 2x2'</span>);
+subplotExample;
 </pre><h2>Plotting functions<a name="9"></a></h2><p>Plotting routines called when a graph with its function handle is selected Using a plotting function allows the plot to include formatting functions such as titles and labels.</p><pre class="codeinput"><span class="keyword">function</span> plotExample()
 <span class="comment">% plotExample Plots a series of 10 random numbers.  Also includes a</span>
 <span class="comment">%  title and labels the x and y axis.</span>
@@ -107,6 +129,55 @@ h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<spa
     title(<span class="string">'Random Plot'</span>);
     xlabel(<span class="string">'Arbitrary Index'</span>);
     ylabel(<span class="string">'Random Number'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> subplotExample
+<span class="comment">% subplotExample An example of a subplot from the MATLAB Plot Gallery</span>
+<span class="comment">% Download on the File Exchange:</span>
+<span class="comment">% http://www.mathworks.com/matlabcentral/fileexchange/35298-matlab-plot-gallery-subplot--2-/content/html/Subplot_2.html</span>
+
+    <span class="comment">% Create the data to be plotted</span>
+    TBdata = [1990 4889 16.4; 1991 5273 17.4; 1992 5382 17.4; 1993 5173 16.5;
+              1994 4860 15.4; 1995 4675 14.7; 1996 4313 13.5; 1997 4059 12.5;
+              1998 3855 11.7; 1999 3608 10.8; 2000 3297  9.7; 2001 3332  9.6;
+              2002 3169  9.0; 2003 3227  9.0; 2004 2989  8.2; 2005 2903  7.9;
+              2006 2779  7.4; 2007 2725  7.2];
+
+    measles = [38556 24472 14556 18060 19549 8122 28541 7880 3283 4135 7953 1884]';
+    mumps = [20178 23536 34561 37395 36072 32237 18597 9408 6005 6268 8963 13882]';
+    chickenPox = [37140 32169 37533 39103 33244 23269 16737 5411 3435 6052 12825 23332]';
+    years = TBdata(:, 1);
+    cases = TBdata(:, 2);
+    rate  = TBdata(:, 3);
+
+    <span class="comment">% Create the pie chart in position 1 of a 2x2 grid</span>
+    subplot(2, 2, 1)
+    pie([sum(measles) sum(mumps) sum(chickenPox)], {<span class="string">'Measles'</span>, <span class="string">'Mumps'</span>, <span class="string">'Chicken Pox'</span>})
+    title(<span class="string">'Childhood Diseases'</span>)
+
+    <span class="comment">% Create the bar chart in position 2 of a 2x2 grid</span>
+    subplot(2, 2, 2)
+    bar(1:12, [measles/1000 mumps/1000 chickenPox/1000], 0.5, <span class="string">'stack'</span>)
+    xlabel(<span class="string">'Month'</span>)
+    ylabel(<span class="string">'Cases (in thousands)'</span>)
+    title(<span class="string">'Childhood Diseases'</span>)
+    axis([0 13 0 100])
+    set(gca, <span class="string">'XTick'</span>, 1:12)
+
+    <span class="comment">% Create the stem chart in position 3 of a 2x2 grid</span>
+    subplot(2, 2, 3)
+    stem(years, cases)
+    xlabel(<span class="string">'Years'</span>)
+    ylabel(<span class="string">'Cases'</span>)
+    title(<span class="string">'Tuberculosis Cases'</span>)
+    axis([1988 2009 0 6000])
+
+    <span class="comment">% Create the line plot in position 4 of a 2x2 grid</span>
+    subplot(2, 2, 4)
+    plot(years, rate)
+    xlabel(<span class="string">'Years'</span>)
+    ylabel(<span class="string">'Infection Rate'</span>)
+    title(<span class="string">'Tuberculosis Cases'</span>)
+    axis([1988 2009 5 20])
 <span class="keyword">end</span>
 </pre><h2>Control functions<a name="10"></a></h2><pre class="codeinput"><span class="keyword">function</span> ctrlExample(tab,h_panel,varargin)
 </pre><h2>ctrlExample<a name="11"></a></h2><p>Makes a panel where inputs and options can be selected.</p><p>Simple expample of an input control panel.</p><p>See also: uicontrol, tfigure, tFigExample</p><pre class="codeinput">    panSize = h_panel.Position;
@@ -126,7 +197,7 @@ h.addCtrl(tab1,@(x) ctrlExample(tab1,x),<span class="string">'title'</span>,<spa
                   <span class="string">'Callback'</span>,@(x,y) uigetfile(<span class="string">'.csv'</span>,<span class="string">'Choose a data file'</span>,ch.String));
 </pre><pre class="codeinput"><span class="keyword">end</span>
 </pre><pre class="codeinput"><span class="keyword">end</span>
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 function h = tFigExample
 %%tFigExample An example showing how to use tfigure.  
@@ -136,7 +207,7 @@ function h = tFigExample
 % Curtisma3@gmail.com
 % Curtisma.org
 %
-% see also: tfigure
+% see also: tfigure, tfigure.tfigure
 close all;
 
 %% Start a new tfigure
@@ -144,40 +215,63 @@ close all;
 h = tfigure;
 
 %% The first tab will contain a single plot
-h.addPlot(h.tabs,'title','Linear');
-plot(1:10,1:10);
-title('Linear Test Plot');
-xlabel('index');
-ylabel('Linear Plot');
+h.addPlot('Normal');
+y = -10:0.5:10;
+x = -10:0.5:10;
+[X, Y] = meshgrid(x, y);
+Z = sin(sqrt(X.^2+Y.^2)) ./ sqrt(X.^2+Y.^2); % Create the function values for Z = f(X,Y)
+surfc(X, Y, Z);
+view(-38, 18) % Adjust the view angle
+title('Normal Response');
+xlabel('x');
+ylabel('y');
+zlabel('z');
 
-%% Create the second tab 
+%% Create the second "Exponential" tab 
 % It will contain a single plot and utilize a function handle to plot
 h_tab = h.addTab;
 h_tab.Title = 'Exponential';
-h.addPlot(h.tabs(2),'plotFcn',@() plot(1:20,exp(1:20)),'title','Linear FH');
+h.addPlot('Linear FH','tab',h.gct);
+plot(1:20,exp(1:20));
 
-%% Create the Third tab
+%% Create the Third "Random" tab
 % It will contain 2 plots.  The first plot will be created using the
 % plotting routine plotExample.
 h.addTab('Random Tab');
-h.addPlot(h.tabs(3),'plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
-h.addPlot(h.tabs(3));
-plot(1:10,rand(1,10));
+h.addPlot('Random','plotFcn',@plotExample,'title','Random'); % The plotExample plotting routine is defined below.
 
-%% Create the Fourth tab
-% The Fourth tab will have the title Test Tab and contain 3 plots.
-h.addTab('Test Tab');
-h.addPlot(h.tabs(4),'plotFcn',@() plot(1:5,1:5));
-h.addPlot(h.tabs(4),'plotFcn',@() plot(1:20,1:20),'title','Linear 10');
-h.addPlot(h.tabs(4),'plotFcn',@() plot(1:10,rand(1,10)),'title','Random');
+h.addPlot('Heart');
+x=(-2:.001:2); y=real((sqrt(cos(x)).*cos(200*x)+sqrt(abs(x))-0.7).*(4-x.*x).^0.01); plot(x,y);
+title('Love');
+xlabel('time (yrs)');
+ylabel('Feeling');
+
+h.addPlot('Wolf','tab',h.gct);
+spy;
+ 
+% Add a Label
 h.addLabel('Tables');
-ht = h.addTable(h.tabs(4),'title','Table');
+
+ht = h.addTable('Table');
 ht.ColumnName = {'X-Data', 'Y-Data', 'Z-Data'};
 ht.Data = rand(3);
+
 %% Add a Control tab as the first tab 
 tab1 = h.addTab('Control','order',1);
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Data Selection');
-h.addCtrl(tab1,@(x) ctrlExample(tab1,x),'title','Scripts');
+h.addCtrl('Data Selection',@(x) ctrlExample(tab1,x),'tab',tab1);
+h.addCtrl('Scripts',@(x) ctrlExample(tab1,x),'tab',tab1);
+
+%% Create the fifth tab
+% Tests subplots
+h.addTab('Test Subplot');
+h.addPlot('subplot 2x1');
+subplot(2,1,1);
+plot(1:5);
+subplot(2,1,2);
+plot(2:6);
+
+h.addPlot('subplot 2x2');
+subplotExample;
 
 %% Plotting functions
 % Plotting routines called when a graph with its function handle is
@@ -191,6 +285,55 @@ function plotExample()
     title('Random Plot');
     xlabel('Arbitrary Index');
     ylabel('Random Number');
+end
+function subplotExample
+% subplotExample An example of a subplot from the MATLAB Plot Gallery
+% Download on the File Exchange:
+% http://www.mathworks.com/matlabcentral/fileexchange/35298-matlab-plot-gallery-subplotREPLACE_WITH_DASH_DASH2-/content/html/Subplot_2.html
+
+    % Create the data to be plotted
+    TBdata = [1990 4889 16.4; 1991 5273 17.4; 1992 5382 17.4; 1993 5173 16.5;
+              1994 4860 15.4; 1995 4675 14.7; 1996 4313 13.5; 1997 4059 12.5;
+              1998 3855 11.7; 1999 3608 10.8; 2000 3297  9.7; 2001 3332  9.6;
+              2002 3169  9.0; 2003 3227  9.0; 2004 2989  8.2; 2005 2903  7.9;
+              2006 2779  7.4; 2007 2725  7.2];
+
+    measles = [38556 24472 14556 18060 19549 8122 28541 7880 3283 4135 7953 1884]';
+    mumps = [20178 23536 34561 37395 36072 32237 18597 9408 6005 6268 8963 13882]';
+    chickenPox = [37140 32169 37533 39103 33244 23269 16737 5411 3435 6052 12825 23332]';
+    years = TBdata(:, 1);
+    cases = TBdata(:, 2);
+    rate  = TBdata(:, 3);
+
+    % Create the pie chart in position 1 of a 2x2 grid
+    subplot(2, 2, 1)
+    pie([sum(measles) sum(mumps) sum(chickenPox)], {'Measles', 'Mumps', 'Chicken Pox'})
+    title('Childhood Diseases')
+
+    % Create the bar chart in position 2 of a 2x2 grid
+    subplot(2, 2, 2)
+    bar(1:12, [measles/1000 mumps/1000 chickenPox/1000], 0.5, 'stack')
+    xlabel('Month')
+    ylabel('Cases (in thousands)')
+    title('Childhood Diseases')
+    axis([0 13 0 100])
+    set(gca, 'XTick', 1:12)
+
+    % Create the stem chart in position 3 of a 2x2 grid
+    subplot(2, 2, 3)
+    stem(years, cases)
+    xlabel('Years')
+    ylabel('Cases')
+    title('Tuberculosis Cases')
+    axis([1988 2009 0 6000])
+
+    % Create the line plot in position 4 of a 2x2 grid
+    subplot(2, 2, 4)
+    plot(years, rate)
+    xlabel('Years')
+    ylabel('Infection Rate')
+    title('Tuberculosis Cases')
+    axis([1988 2009 5 20])
 end
 %% Control functions
 function ctrlExample(tab,h_panel,varargin)

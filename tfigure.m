@@ -82,6 +82,7 @@ classdef tfigure < hgsetget
         	obj.fig = figure('Visible','off',...
                              'SizeChangedFcn',@obj.figResize,...
                              'Interruptible','off'); 
+            obj.fig.UserData = obj;
             obj.tabGroup = uitabgroup('Parent', obj.fig);
             if(nargin>0)
                 obj.addTab(varargin{:});

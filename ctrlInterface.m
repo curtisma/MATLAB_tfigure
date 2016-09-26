@@ -4,11 +4,10 @@ classdef (Abstract) ctrlInterface < hgsetget
     %   control panel for use with tfigure.
     
     properties
-        gui
         guiCtrl % control Panel
     end
     properties (Abstract)
-        
+        gui
     end
     methods
         function obj = ctrlInterface(varargin)
@@ -20,21 +19,6 @@ classdef (Abstract) ctrlInterface < hgsetget
             p.parse(varargin{:});
             % Set gui
             obj.gui = p.Results.gui;
-        end
-        function set.gui(obj,gui) % Setting GUI adds the simulation control to the first tab.
-            if(~isa(gui,'tfigure') && ~isempty(gui))
-                    error('The GUI needs to be a tfigure')
-            end
-            obj.gui = gui;
-            % GUI setup
-            if(~isempty(obj.gui))
-                if(length(obj.gui.tabs) == 1)
-                    h = obj.gui.addCtrl('Simulation',@(x) obj.ctrl(x),'tab',obj.gui.tabs);
-                else
-                    h = obj.gui.addCtrl('Simulation',@(x) obj.ctrl(x),'tab',obj.gui.tabs(1));
-                end
-                obj.guiCtrl = h.UserData.hp;
-            end
         end
     end
     methods (Abstract)

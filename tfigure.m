@@ -233,19 +233,6 @@ classdef tfigure < hgsetget
             % Add the new analysis panel to the plot list
             hs = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             plotList = hs.plotList;
-            
-%             if(length(hs.plotList.Children) < 2)
-%                 pos = [5 ]
-%             else
-                origUnits = hs.plotList.Units;
-                hs.plotList.Units = 'pixels';
-                posPlotList = get(hs.plotList,'Position');
-                hs.plotList.Units = origUnits;
-%                 pos = [5 posPlotList(4)-45-30*length(hs.plotList.Children) posPlotList(3)-10 20];
-%                 if(pos(3)<0)
-%                     pos(3) = 1;
-%                 end
-%             end
             h = uicontrol('parent',plotList,...
                           'Style', 'togglebutton',...
                           'String', p.Results.title,'Units','pixels',...
@@ -267,7 +254,7 @@ classdef tfigure < hgsetget
             
             % Setup Panel
             h.UserData.hp = uipanel('Parent',hs.CardPanel,'Units','pixels',...
-                                    'Tag','panel','BorderType','none');
+                                    'Tag',p.Results.title,'BorderType','none');
             h.UserData.hp.UserData.hc = h;
             h.UserData.hp.UserData.cardNum = length(hs.CardPanel.Children);
             
@@ -707,8 +694,8 @@ classdef tfigure < hgsetget
 %                 h_panels = [h_panels.hp];
                 src.Parent.Parent.UserData.CardPanel.Selection = src.SelectedObject.UserData.hp.UserData.cardNum;
 %                 set(h_panels,'visible','off')
-                src.SelectedObject.UserData.hp.Visible = 'on';
-                src.Visible = 'on';
+%                 src.SelectedObject.UserData.hp.Visible = 'on';
+%                 src.Visible = 'on';
                 if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))
                     axes(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes'));
                 end

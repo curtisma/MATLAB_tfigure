@@ -1,6 +1,8 @@
 % MATLAB_TFIGURE
-% Version 3.2 4-Apr-2016
+% Version 4.0 25-Sept-2016
 %
 % Files
 %   tFigExample - tFigExample An example showing how to use tfigure.  
-%   tfigure     - A figure for holding tabbed groups of plots
+%   tfigure     - A figure for holding tabbed groups of plots,tables, and
+%    control panels
+%   ctrlInterface - An abstract classeinterface for creating ctrl classes.

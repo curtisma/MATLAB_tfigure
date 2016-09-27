@@ -301,6 +301,7 @@ classdef tfigure < hgsetget
                 p.KeepUnmatched = true;
                 p.addOptional('title','plot',@ischar)
                 p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
+                p.addParameter('legendTable',[], @(x) isempty(x) || istable(x) || iscell(x));
                 p.parse(varargin{:});
                 if(nargin <= 2)
                 	h = obj.addPanel(p.Results.title);
@@ -313,10 +314,19 @@ classdef tfigure < hgsetget
                 h = obj.addPanel('plot');
             end
             h.Tag = 'plot';
-
-            % Setup Axes
-            ha = axes(h.UserData.hp);%,...'Units','pixels',...
+            
+            % Setup Axes and Legend Table (if applicable)
+            if(~isempty(p.Results.legendTable))
+                hb = uix.HBoxFlex('Parent',h,'Spacing',5,'Padding',5);
+                ha = axes(hb);
+                hlt = uitable('Parent',hb,...
+                       'Units','normalized','Position',[0 0 1 1],...
+                       'Tag','legend table');
+            else
+                ha = axes(h.UserData.hp);%,...'Units','pixels',...
 %                              'ActivePositionProperty','OuterPosition');
+            end
+            
             ha.Visible = 'on';
             
             % Setup Plot Function

@@ -301,7 +301,7 @@ classdef tfigure < hgsetget
                 p.KeepUnmatched = true;
                 p.addOptional('title','plot',@ischar)
                 p.addParameter('plotFcn',[],@(x) (isa(x,'function_handle') || isempty(x)));
-                p.addParameter('legendTable',[], @(x) isempty(x) || istable(x) || iscell(x));
+                p.addParameter('legendTable',[], @(x) isempty(x) || istable(x) || iscell(x) || x);
                 p.parse(varargin{:});
                 if(nargin <= 2)
                 	h = obj.addPanel(p.Results.title);
@@ -317,11 +317,18 @@ classdef tfigure < hgsetget
             
             % Setup Axes and Legend Table (if applicable)
             if(~isempty(p.Results.legendTable))
-                hb = uix.HBoxFlex('Parent',h,'Spacing',5,'Padding',5);
+                hb = uix.HBoxFlex(h,'Spacing',5,'Padding',5);
                 ha = axes(hb);
+                if(istable(p.Results.legendTable))
+                    data = table2cell(p.Results.legendTable);
+                else
+                    data = p.Results.legendTable;
+                end
+%                 colNames = 
                 hlt = uitable('Parent',hb,...
                        'Units','normalized','Position',[0 0 1 1],...
-                       'Tag','legend table');
+                       'Tag','legend table','Data',data,...
+                       'ColumnName',colNames);
             else
                 ha = axes(h.UserData.hp);%,...'Units','pixels',...
 %                              'ActivePositionProperty','OuterPosition');

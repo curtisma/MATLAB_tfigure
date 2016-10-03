@@ -57,8 +57,10 @@ ht.Data = rand(3);
 
 %% Add a Control tab as the first tab 
 tab1 = h.addTab('Control','order',1);
-h.addCtrl('Data Selection',@(x) ctrlExample(tab1,x),'tab',tab1);
+dataSel = dataSelectionCtrl;
+h.addCtrl('Data Selection',@dataSel.ctrl,'tab',tab1);
 h.addCtrl('Scripts',@(x) ctrlExample(tab1,x),'tab',tab1);
+
 
 %% Create the fifth tab
 % Tests subplots

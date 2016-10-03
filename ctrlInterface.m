@@ -12,6 +12,10 @@ classdef (Abstract) ctrlInterface < hgsetget
     methods
         function obj = ctrlInterface(varargin)
         %ctrlInterface Constructor
+        % 
+        % PARAMAMETERS
+        %  gui - Add a tfigure handle to the interface
+        %
         % See also: ctrlInterface
             % Parse Inputs
             p=inputParser;

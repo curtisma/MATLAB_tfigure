@@ -23,15 +23,15 @@ classdef dataSelectionCtrl < ctrlInterface
                 h.dataTitle = uicontrol('Parent',h.OuterBox,'Style','text','String','Selected Data Files','FontSize',13);
                 h.dataBox = uix.HBox('Parent',h.OuterBox);
                     h.dataButtonsBox = uix.VButtonBox('Parent',h.dataBox,'VerticalAlignment','top');
-                        h.buttonFolder = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','F','Callback',@obj.loadFolder);
-                        h.buttonAddData = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','+','FontSize',12);
-                        h.buttonDelData = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','-','FontSize',12);
+                        h.buttonFolder = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','F','Callback',@obj.loadFolder,'TooltipString','Load all MAT datafiles in a folder');
+                        h.buttonAddData = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','+','FontSize',12,'Callback',@obj.loadFile,'TooltipString','Load specific MAT datafile(s)');
+                        h.buttonDelData = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','-','FontSize',12,'Callback',@obj.removeFile,'TooltipString','Remove specific MAT datafile(s)');
                         h.buttonReloadData = uicontrol(h.dataButtonsBox,'Style','pushbutton','String','R','FontSize',12);
                         set(h.dataButtonsBox,'Spacing',5,'ButtonSize',[75 30]);
                     if(obj.guiCtrl.fileTable)
                         h.fileList = uitable(h.dataBox,'FontSize',11);
                     else
-                        h.fileList = uicontrol(h.dataBox,'Style','listbox','String','Select data follder or add data files','FontSize',11,'Max',10,'Min',0);
+                        h.fileList = uicontrol(h.dataBox,'Style','listbox','String','Select data folder or add data files','FontSize',11,'Max',10,'Min',0);
                     end
                     set(h.dataBox,'Spacing',5,'Widths',[60 -1]);
                 h.emptySpace = uix.Empty('Parent',h.OuterBox);
@@ -83,6 +83,62 @@ classdef dataSelectionCtrl < ctrlInterface
             end
             
 %             obj.loadDatasets;
+        end
+        function loadFile(obj,varargin)
+        %loadFile Ass a .mat file
+        % Loads a .mat file
+        %
+            if(nargin == 3 && isa(varargin{1},'matlab.ui.control.UIControl'))
+                p.Results.file = [];
+            else
+                p = inputParser;
+                p.KeepUnmatched = true;
+                p.addOptional('file',[],@ischar);
+                p.parse(varargin{:});
+            end
+            if(isempty(p.Results.file))
+                if(isfield(obj.guiCtrl,'lastLoadFileDir'))
+                    startDir = obj.guiCtrl.lastLoadFileDir;
+                else
+                    startDir = pwd;
+                end
+                [fileName,pathName] = uigetfile({'*.mat','MAT-files (*.mat)'; ...
+                    '*.*',  'All Files (*.*)'},'Select the dataset(s)',...
+                    startDir,'MultiSelect', 'on');
+                if(isnumeric(fileName) && fileName == 0)
+                    return;
+                end
+            end
+            obj.guiCtrl.lastLoadFileDir = pathName;
+            if(~iscell(fileName))
+                fileName = {fileName};
+            end
+            dataPaths = cellfun(@(x) fullfile(pathName, x),fileName,'UniformOutput',false);
+            if(isfield(obj.guiCtrl,'dataPaths'))
+            % Add to existing dataPaths
+                dataPaths = setdiff(dataPaths, obj.guiCtrl.dataPaths);
+                obj.guiCtrl.dataPaths = [obj.guiCtrl.dataPaths dataPaths];
+            else
+                obj.guiCtrl.dataPaths = dataPaths;
+            end
+            % Setup data selection display
+            if(~isempty(obj.guiCtrl) && ~obj.guiCtrl.fileTable && ~isempty(dataPaths))
+                [~, fileNames, ~] = cellfun(@fileparts,obj.guiCtrl.dataPaths,'UniformOutput',false);
+                obj.guiCtrl.layout.fileList.String = cellfun(@(x,y) [x '  (' y ')'],fileNames,obj.guiCtrl.dataPaths,'UniformOutput',false);
+            elseif(~isempty(obj.guiCtrl) && obj.guiCtrl.fileTable)
+                
+            end
+        end
+        function removeFile(varargin)
+            if(nargin == 3 && isa(varargin{1},'matlab.ui.control.UIControl'))
+                p.Results.file = [];
+            else
+                p = inputParser;
+                p.KeepUnmatched = true;
+                p.addOptional('file',[],@ischar);
+                p.parse(varargin{:});
+            end
+            
         end
         function data = loadDatasets(obj,varargin)
             for dNum = 1:length(obj.datasetPaths)

@@ -23,7 +23,10 @@ classdef tfigure < hgsetget
     %  addTable - Adds a table to the plot list
     %  addLabel - Adds a label to the plot list
     %  addCtrl - Adds a control panel to the plot list
+    %  addPanel - Adds a panel to the plot list
     %  savePPT - Saves all plots to a Power Point presentation.
+    %  exportToFigure - Copies a panel to a seperate figure
+    %  exportToClipboard - Exports a picture of the panel to the clipboard
     %
     % Examples:
     %  tFigExample - tfigure example
@@ -273,7 +276,7 @@ classdef tfigure < hgsetget
                     error('tfigure:addPanel:numOutputs','Unsupported number of outputs for tfigure.addPanel');
             end
         end
-        function ha = addPlot(obj,varargin)
+        function varargout = addPlot(obj,varargin)
         %% addPlot 
         % Adds a plot to the given tab.  
         %  When the plot button is selected the plot is selected
@@ -311,6 +314,7 @@ classdef tfigure < hgsetget
             else
                 % Menu selection
                 p.Results.plotFcn = [];
+                p.Results.legendTable = [];
                 h = obj.addPanel('plot');
             end
             h.Tag = 'plot';
@@ -345,6 +349,12 @@ classdef tfigure < hgsetget
             end
             h.Parent.SelectedObject = h;
             obj.selectPlot(h.Parent,[]);
+            switch nargout
+                case {0, 1}
+                    varargout = {ha};
+                case 2
+                    varargout = {ha h};
+            end
         end
         function varargout = addTable(obj,varargin)
         %% addTable
@@ -508,7 +518,7 @@ classdef tfigure < hgsetget
         % Exports a panel to the clipboard as if it it were in its own 
         % figure
         %
-        % obj.exportToClipboard([panel]
+        % obj.exportToClipboard([panel])
         %
         % INPUTS
         %  panel - (optional) a panel handle to be exported

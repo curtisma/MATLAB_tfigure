@@ -1,4 +1,4 @@
-classdef tfigure < hgsetget
+classdef tfigure < matlab.mixin.SetGet
     %% TFIGURE 
     % A figure for holding tabbed groups of plots.
     % Creates a tabbed plot figure.  This allows the user to setup tabs
@@ -199,7 +199,7 @@ classdef tfigure < hgsetget
         % Adds a panel to the given tab.  
         %  When the panel button is selected the panel is selected
         %
-        % h = h.addPanel([title],'tab',[h_tab],'plotFcn',[function_handle])
+        % h = obj.addPanel([title],'tab',[h_tab],'plotFcn',[function_handle])
         %
         % INPUTS
         %  title - (optional) Uses this string as the panel title displayed 
@@ -506,6 +506,13 @@ classdef tfigure < hgsetget
             end
             h.Parent.SelectedObject = h;
             obj.selectPlot(h.Parent,[]);
+        end
+        function h = addButton(obj,name,callbackFcn)
+        %% addButton
+        % Adds a button to the plot list
+        %
+        % NOT IMPLEMENTED
+        %
         end
         %function export(obj,varargin)
         % export Exports an analysis panel, a tab, or an entire tfigure using

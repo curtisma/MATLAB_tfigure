@@ -259,6 +259,7 @@ classdef tfigure < matlab.mixin.SetGet
             h.UserData.hp = uipanel('Parent',hs.CardPanel,'Units','pixels',...
                                     'Tag',p.Results.title,'BorderType','none');
             h.UserData.hp.UserData.hc = h;
+            h.UserData.hp.UserData.h = obj;
             h.UserData.hp.UserData.cardNum = length(hs.CardPanel.Children);
             
             % Setup order

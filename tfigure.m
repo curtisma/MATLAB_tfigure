@@ -111,7 +111,7 @@ classdef tfigure < matlab.mixin.SetGet
         % INPUTS
         %  title - (optional) name of the tab
         % PARAMETERS
-        %  order - Specifies the tab order
+        %  order - Specifies the tab position after which the tab is placed
         %  listName - The plot list title listed at the top
         %   Defaults to 'Plots'
         % OUTPUTS
@@ -196,7 +196,7 @@ classdef tfigure < matlab.mixin.SetGet
         end
         function varargout = addPanel(obj,varargin)
         %% addPanel 
-        % Adds a panel to the given tab.  
+        % Adds a panel to a tab.  
         %  When the panel button is selected the panel is selected
         %
         % h = obj.addPanel([title],'tab',[h_tab],'plotFcn',[function_handle])
@@ -207,6 +207,8 @@ classdef tfigure < matlab.mixin.SetGet
         % PARAMETERS
         %  tab - Selects which tab will contain the panel.  The tab can be
         %   specified as a uitab handle or the name of the tab
+        %  order - Specifies the plot list position after which the panel is 
+        %   placed
         % OUTPUTS
         %  h - Handle to the panel's control button (optional)
         %  hp - Handle to the panel (optional)
@@ -292,6 +294,8 @@ classdef tfigure < matlab.mixin.SetGet
         %   specified as a uitab handle or the name of the tab
         %  plotFcn - A function handle to be evaluated when the plot is
         %   selected.
+        %  order - Specifies the plot list position after which the plot is 
+        %   placed
         % OUTPUTS
         %  ha - Handle to the plot axis
         % EXAMPLE
@@ -369,9 +373,10 @@ classdef tfigure < matlab.mixin.SetGet
         % PARAMETERS
         %  tab - Selects which tab will contain the table.  The tab can be
         %   specified as a uitab handle or the name of the tab
-        %  order - Position in the plot list
+        %  order - Specifies the plot list position after which the table is 
+        %   placed
         %  style - Selects between the default MATLAB table and a Java
-        %   table. uitable: 'uitable or 'ui'  Java Table: 'Java',
+        %   table. uitable: 'uitable or 'ui'  Java Table: 'Java' or
         %   'JavaTable'
         % OUTPUTS
         %  ht - handle to the table
@@ -429,7 +434,8 @@ classdef tfigure < matlab.mixin.SetGet
         %  title - text to display
         % PARAMETERS
         %  title - text to display
-        %  order - Position in the plot list
+        %  order - Specifies the plot list position after which the label is 
+        %   placed
         %  tab - Selects which tab will contain the table.  The tab can be 
         %   specified as a uitab handle or the name of the tab 
         % OUTPUTS
@@ -486,7 +492,8 @@ classdef tfigure < matlab.mixin.SetGet
         %   a single input that is a handle to the panel that will contain 
         %   the control panel.
         % PARAMETERS
-        %  order - Position in the plot list
+        %  order - Specifies the plot list position after which the ctrl is 
+        %   placed
         %  tab - Selects which tab will contain the table.  The tab can be 
         %   specified as a uitab handle or the name of the tab 
         % OUTPUTS
@@ -508,12 +515,54 @@ classdef tfigure < matlab.mixin.SetGet
             h.Parent.SelectedObject = h;
             obj.selectPlot(h.Parent,[]);
         end
-        function h = addButton(obj,name,callbackFcn)
+        function h = addButton(obj,varargin)
         %% addButton
-        % Adds a button to the plot list
+        % Adds a button to the plot list which calls a callback when it is
+        % pressed but does not change the panel.
         %
-        % NOT IMPLEMENTED
+        %  ht = h.addButton([title],'Param','ParamValue',...);
         %
+        % INPUTS
+        %  title - (optional) Uses this string as the button title displayed 
+        %   in the plot list
+        % PARAMETERS
+        %  callback - A callback function handle that is called when the
+        %   button is pressed.  The callback must have 3 inputs 
+        %   e.g. callback(obj,src,callbackdata)
+        %  tab - Selects which tab will contain the panel.  The tab can be
+        %   specified as a uitab handle or the name of the tab
+        %  order - Specifies the plot list position after which the button is 
+        %   placed
+        % See Also: tfigure
+            p=inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional('title','Button',@ischar);
+            p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
+            p.addParameter('order',[],@isnumeric);
+            p.addParameter('callback',function_handle.empty,@(x) isa(x,'function_handle'));
+            p.parse(varargin{:})
+            
+            % Select the Tab
+            tab = obj.parseTab(p.Results.tab);
+            
+            % Add the new label to the plot list
+            plotList = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
+            plotList = plotList.plotList;
+            h = uicontrol('parent',plotList,...
+                          'Style', 'togglebutton','FontSize',11,...
+                          'String', p.Results.title,'Units','pixels',...
+                          'tag','button');
+            if(~isempty(p.Results.callback))
+                set(h,'Callback',p.Results.callback)
+            end
+            if(length(plotList.Children) == 2 && (plotList.Position(3) == 1))
+                set(plotList.Parent,'Widths',[150, -1]);
+            end
+            % Setup order
+            CurrentPanelSelection = h.Parent.SelectedObject;
+            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+            obj.resizePlotList(plotList,[]);
+            h.Parent.SelectedObject = CurrentPanelSelection; 
         end
         %function export(obj,varargin)
         % export Exports an analysis panel, a tab, or an entire tfigure using
@@ -722,15 +771,16 @@ classdef tfigure < matlab.mixin.SetGet
                 end
             end
         end
-        function selectPlot(~,src,~) % ~ is callbackdata          
+        function selectPlot(~,src,callbackdata) % ~ is callbackdata          
         % selectPlot Runs whenever a plot is selected from the plot list
             if(length(src.Children) > 1)
 %                 h_panels = [src.Children.UserData];
 %                 h_panels = [h_panels.hp];
-                src.Parent.Parent.UserData.CardPanel.Selection = src.SelectedObject.UserData.hp.UserData.cardNum;
-%                 set(h_panels,'visible','off')
-%                 src.SelectedObject.UserData.hp.Visible = 'on';
-%                 src.Visible = 'on';
+                if(~strcmp(src.SelectedObject.Tag,'button'))
+                    src.Parent.Parent.UserData.CardPanel.Selection = src.SelectedObject.UserData.hp.UserData.cardNum;
+                else
+                    src.SelectedObject = callbackdata.OldValue;
+                end
                 if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))
                     axes(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes'));
                 end

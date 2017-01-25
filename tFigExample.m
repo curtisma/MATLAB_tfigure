@@ -63,7 +63,7 @@ h.addCtrl('Scripts',@(x) ctrlExample(tab1,x),'tab',tab1);
 
 
 %% Create the fifth tab
-% Tests subplots
+% Tests subplots and addButton
 h.addTab('Test Subplot');
 h.addPlot('subplot 2x1');
 subplot(2,1,1);
@@ -73,6 +73,7 @@ plot(2:6);
 
 h.addPlot('subplot 2x2');
 subplotExample;
+h.addButton('Hello World','callback',@(~,~,~) disp('Hello World'));
 
 %% Plotting functions
 % Plotting routines called when a graph with its function handle is

@@ -61,6 +61,11 @@ classdef tfigure < matlab.mixin.SetGet
     properties (Access = private)
         tabGroup
     end
+    %% 
+    events
+        tabSelectionChanged
+%         plotListSelectionChanged
+    end
     %% *Methods*
     % Class methods
     methods
@@ -71,35 +76,60 @@ classdef tfigure < matlab.mixin.SetGet
         %  function.
         %
         %  h = tfigure;
-        %   Creates a tfigure object
-        %  h2 = tfigure('Data Tab #1');
-        %   Creates a tfigure object with "Data Tab #1" as the tab title.
+        %   Creates a tfigure object without any tabs
+        %  h2 = tfigure('Data Tab #1',...);
+        %   Creates a tfigure object with a tab titled "Data Tab #1"
+        %   Tab Parameter-Value pairs can be included for the first tab.
         %
         % INPUTS
         %  title_tab1 - (optional) The title of the first tab to be added.
+        % PARAMETERS
+        %  TabLocation - The location of the tabs 
+        %   Options: 'top' (default),'left','bottom','right'
+        %  AddTabEnable - Includes the '+' button in the button group to
+        %   add a new tab.  [logical] (default: true)
+        % FIGURE PARAMETERS
+        %  FigName - Figure name, specified as a character vector. 
+        %   By default, the figure name is 'Figure n', where n is an integer. 
+        %   When you specify the FigName property, the figure title becomes 
+        %   'Figure n: name'. If you want only the FigName value to appear, 
+        %   set FigNumberTitle to 'off'.
+        %  FigNumberTitle - Figure window title number, specified as
+        %   'on' or 'off'. The FigNumberTitle property determines whether 
+        %   MATLAB includes the label Figure n in the title bar, where n is
+        %   the figure Number property value.
         % OUTPUTS
         %  h - a tfigure object
         % 
         % see also: tFigExample
-        %
+            p = inputParser;
+            p.KeepUnmatched = true;
+            p.addOptional('TabName','',@ischar);
+            p.addParameter('TabLocation','top',@(x) any(validatestring(x,{'top','left','bottom','right'})));
+            p.addParameter('AddTabEnable',true,@islogical);
+            p.addParameter('FigName','',@ischar);
+            p.addParameter('FigNumberTitle','on',@(x) any(validatestring(x,{'on','off'})));
+            p.parse(varargin{:});
+
         	obj.fig = figure('Visible','off',...
                              ... % 'SizeChangedFcn',@obj.figResize,...
-                             'Interruptible','off'); 
+                             'Interruptible','off','Name',p.Results.FigName,...
+                             'NumberTitle',p.Results.FigNumberTitle); 
             obj.fig.UserData = obj;
-            obj.tabGroup = uitabgroup('Parent', obj.fig);
-            if(nargin>0)
+            obj.tabGroup = uitabgroup('Parent', obj.fig,'SelectionChangedFcn',@obj.tabSelectionChangedCB,'TabLocation',p.Results.TabLocation);
+            if(nargin>0 && ~isempty(varargin{1}))
                 obj.addTab(varargin{:});
-            else
-                obj.addTab;
             end
 %             obj.menu = uimenu(obj.fig,'Label','Tfigure');
             obj.menu = uimenu(obj.fig,'Label','Export');
-            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenu)
+            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenuCB)
             uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
             
             % Add '+' addTab button
-            uitab('Parent', obj.tabGroup,'Title','+',...
-                  'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
+            if(p.Results.AddTabEnable)
+                uitab('Parent', obj.tabGroup,'Title','+',...
+                      'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
+            end
             obj.fig.Visible = 'on';
         end
         function h = addTab(obj,varargin)
@@ -135,6 +165,7 @@ classdef tfigure < matlab.mixin.SetGet
                              @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
                 p.addParameter('listName','Plots', @ischar)
+                p.KeepUnmatched = true;
                 parse(p,varargin{:});
             end
             order = p.Results.order;
@@ -540,6 +571,7 @@ classdef tfigure < matlab.mixin.SetGet
             p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)))
             p.addParameter('order',[],@isnumeric);
             p.addParameter('callback',function_handle.empty,@(x) isa(x,'function_handle'));
+            p.addParameter('ToolTipString','',@ischar);
             p.parse(varargin{:})
             
             % Select the Tab
@@ -551,7 +583,7 @@ classdef tfigure < matlab.mixin.SetGet
             h = uicontrol('parent',plotList,...
                           'Style', 'togglebutton','FontSize',11,...
                           'String', p.Results.title,'Units','pixels',...
-                          'tag','button');
+                          'tag','button','ToolTipString',p.Results.ToolTipString);
             if(~isempty(p.Results.callback))
                 set(h,'Callback',p.Results.callback)
             end
@@ -696,7 +728,7 @@ classdef tfigure < matlab.mixin.SetGet
                 fileName = p.Results.fileName;
             end
             isOpen  = exportToPPTX();
-            if ~isempty(isOpen),
+            if ~isempty(isOpen)
                 % If PowerPoint already started, then close first and then open a new one
                 exportToPPTX('close');
             end
@@ -811,13 +843,19 @@ classdef tfigure < matlab.mixin.SetGet
                 tab_out = tab;
             end
         end
-        function exportMenu(obj,menu,~)
+        function exportMenuCB(obj,menu,~)
         % Export menu callback
         %  Executes the requested depending on the selected export option
             if(strcmp(menu.Label,'Export PPT'))
                 obj.savePPT();
             end
         end    
+        function tabSelectionChangedCB(obj,~,~)
+            notify(obj,'tabSelectionChanged');
+        end
+        function plotListSelectionChangedCB(obj,~,~)
+            notify(obj,'plotListSelectionChanged');
+        end
         function renameDlg(~,menu,~) % ~ is obj, ActionData
         % renameDlg Diaglog box for renaming plots and tabs from a context
         %  menu

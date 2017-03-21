@@ -75,6 +75,9 @@ h.addPlot('subplot 2x2');
 subplotExample;
 h.addButton('Hello World','callback',@(~,~,~) disp('Hello World'));
 
+%% Create a tfigure with the tabs on the left instead of the top
+h(2) = tfigure('','TabPosition','left');
+
 %% Plotting functions
 % Plotting routines called when a graph with its function handle is
 % selected

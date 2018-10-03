@@ -14,6 +14,7 @@ close all;
 h = tfigure;
 
 %% The first tab will contain a single plot
+h.addTab
 h.addPlot('Normal');
 y = -10:0.5:10;
 x = -10:0.5:10;
@@ -77,6 +78,18 @@ h.addButton('Hello World','callback',@(~,~,~) disp('Hello World'));
 
 %% Create a tfigure with the tabs on the left instead of the top
 h(2) = tfigure('','TabPosition','left');
+h(2).addTab;
+h(2).addPlot('testSingle');
+% % h(2).addGroup;
+% h(2).addPlot('group1_plot1','group','group1');
+% h(2).addGroup('Group2');
+% h(2).addPlot('group2_plot1','group','group2');
+% h(2).addPlot('group2_plot2','group','group2');
+% h(2).addPlot('group1_plot2','group','group1');
+
+%% Create a tfigure using uifigure instead of figure
+% Supports a different set of functions
+h(3) = tfigure('','TabPosition','left');
 
 %% Plotting functions
 % Plotting routines called when a graph with its function handle is

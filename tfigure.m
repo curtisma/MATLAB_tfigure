@@ -13,8 +13,10 @@ classdef tfigure < matlab.mixin.SetGet
     %  fig - Handle to the figure that displays tfigure.
     %  tabs - Handles to each of the tfigure's tabs
     %  figureSize - Current size of the figure containing tfigure
-    %  gct - get current tab
-    %  gcp - get current panel
+    %  gct - get current tab.  Set gct to select the current tab.
+    %   gct can be set using the tab number, title, or object
+    %  gcp - get current panel Set gcp to select the current panel.
+    %   gcp can be set using the panel number, title, or object
     %
     % tfigure Methods:
     %  tfigure - Constructs a new tabbed figure
@@ -51,11 +53,14 @@ classdef tfigure < matlab.mixin.SetGet
         fig % Handle to the figure that displays tfigure.
 %         tabs % Handles to each of the tfigure's tabs
         menu % Tfigure menu
+        addTabEnable
+        buttonSize = 20;
+        buttonSpacing = 10;
     end
     properties (Dependent)
         tabs % Handles to each of the tfigure's tabs
         figureSize % Current size of the figure containing tfigure
-        gct % Get Current Tab
+        gct % Get Current Tab.  You can also set this property to select a new current tab.
         gcp % Get Current Panel
     end
     properties (Access = private)
@@ -88,6 +93,10 @@ classdef tfigure < matlab.mixin.SetGet
         %   Options: 'top' (default),'left','bottom','right'
         %  AddTabEnable - Includes the '+' button in the button group to
         %   add a new tab.  [logical] (default: true)
+        %  menuOptions - A structure that specifies the options for menus
+        %   Fields:
+        %    * File - Adds the file menu to the menu bar [logical]
+        %    * Export - Adds the export menu to the menu bar [logical]
         % FIGURE PARAMETERS
         %  FigName - Figure name, specified as a character vector. 
         %   By default, the figure name is 'Figure n', where n is an integer. 
@@ -98,6 +107,10 @@ classdef tfigure < matlab.mixin.SetGet
         %   'on' or 'off'. The FigNumberTitle property determines whether 
         %   MATLAB includes the label Figure n in the title bar, where n is
         %   the figure Number property value.
+        %  FigType - Base figure type, specified as 'figure' (default) or
+        %   'uifigure'
+        %  Position - Sets the position of the figure. See the definition
+        %  of the 'Position' property of a figure
         % OUTPUTS
         %  h - a tfigure object
         % 
@@ -109,27 +122,53 @@ classdef tfigure < matlab.mixin.SetGet
             p.addParameter('AddTabEnable',true,@islogical);
             p.addParameter('FigName','',@ischar);
             p.addParameter('FigNumberTitle','on',@(x) any(validatestring(x,{'on','off'})));
+            p.addParameter('FigType','figure',@(x) any(validatestring(x,{'figure','uifigure'})));
+            p.addParameter('Position',[],@(x) validateattributes(x,{'numeric'},{'numel',4,'vector'}));
+            p.addParameter('buttonSize',obj.buttonSize,@(x) validateattributes(x,{'numeric'},{'scalar'}));
+            p.addParameter('menuOptions',[])
             p.parse(varargin{:});
-
-        	obj.fig = figure('Visible','off',...
-                             ... % 'SizeChangedFcn',@obj.figResize,...
-                             'Interruptible','off','Name',p.Results.FigName,...
-                             'NumberTitle',p.Results.FigNumberTitle); 
+            obj.buttonSize = p.Results.buttonSize;
+            
+            if(strcmp(p.Results.FigType,'figure') && isempty(p.Results.Position))
+                obj.fig = figure('Visible','off',...
+                                 ... % 'SizeChangedFcn',@obj.figResize,...
+                                 'Interruptible','off','Name',p.Results.FigName,...
+                                 'NumberTitle',p.Results.FigNumberTitle); 
+            elseif(strcmp(p.Results.FigType,'figure'))
+                obj.fig = figure('Visible','off',...
+                                 ... % 'SizeChangedFcn',@obj.figResize,...
+                                 'Position',p.Results.Position,...
+                                 'Interruptible','off','Name',p.Results.FigName,...
+                                 'NumberTitle',p.Results.FigNumberTitle); 
+            elseif(strcmp(p.Results.FigType,'uifigure'))
+                obj.fig = uifigure('Visible','off',...
+                                 ... % 'SizeChangedFcn',@obj.figResize,...
+                                 'Interruptible','off','Name',p.Results.FigName,...
+                                 'NumberTitle',p.Results.FigNumberTitle); 
+            end
             obj.fig.UserData = obj;
             obj.tabGroup = uitabgroup('Parent', obj.fig,'SelectionChangedFcn',@obj.tabSelectionChangedCB,'TabLocation',p.Results.TabLocation);
             if(nargin>0 && ~isempty(varargin{1}))
                 obj.addTab(varargin{:});
             end
 %             obj.menu = uimenu(obj.fig,'Label','Tfigure');
-            obj.menu = uimenu(obj.fig,'Label','Export');
-            uimenu(obj.menu,'Label','Export PPT','Callback',@obj.exportMenuCB)
-            uimenu(obj.menu,'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
-            
+            if(~isempty(p.Results.menuOptions) && ...
+            isfield(p.Results.menuOptions,'File') && ...
+            p.Results.menuOptions.File == true)
+                obj.menu = uimenu(obj.fig,'Label','File');
+            end
+            if(isempty(p.Results.menuOptions) || ...
+                isfield(p.Results.menuOptions,'Export')&& p.Results.menuOptions.Export == true)
+                obj.menu(end+1) = uimenu(obj.fig,'Label','Export');
+                uimenu(obj.menu(end),'Label','Export PPT','Callback',@obj.exportMenuCB)
+                uimenu(obj.menu(end),'Label','Copy Panel to Clipboard','Callback',@obj.exportToClipboard);
+            end
             % Add '+' addTab button
             if(p.Results.AddTabEnable)
                 uitab('Parent', obj.tabGroup,'Title','+',...
                       'ButtonDownFcn',@obj.addTab,'TooltipString','Add Tab');
             end
+            obj.addTabEnable = p.Results.AddTabEnable;
             obj.fig.Visible = 'on';
         end
         function h = addTab(obj,varargin)
@@ -156,6 +195,7 @@ classdef tfigure < matlab.mixin.SetGet
                 p.Results.titleIn = ['dataset ' num2str(length(obj.tabs)+1)];
                 p.Results.order = [];
                 p.Results.listName = 'Plots';
+                p.Results.listType = 'buttons';
             else
             % User Call
                 p = inputParser;
@@ -165,6 +205,7 @@ classdef tfigure < matlab.mixin.SetGet
                              @(x) isnumeric(x) && (x >= 1) && ... 
                              (x <= (length(obj.tabs)+1)))
                 p.addParameter('listName','Plots', @ischar)
+                p.addParameter('listType','buttons', @(x) any(validatestring(x,{'buttons','tree'})))
                 p.KeepUnmatched = true;
                 parse(p,varargin{:});
             end
@@ -200,12 +241,16 @@ classdef tfigure < matlab.mixin.SetGet
             hs.layout = uix.HBoxFlex('Parent',h,'Spacing',5,'Padding',5);
             
             % Setup plot list
-            hs.plotList = uibuttongroup('parent',hs.layout,...
-                            'Units','pixels',...
-                            ...%'Position',[10 10  150 figSize(4)-45],...
-                            'tag','plotList',...
-                            'SelectionChangedFcn',@obj.selectPlot,...
-                            'SizeChangedFcn',@obj.resizePlotList);
+            if(strcmp(p.Results.listType,'buttons'))
+                hs.plotList = uibuttongroup('parent',hs.layout,...
+                                ...%'Position',[10 10  150 figSize(4)-45],...
+                                'tag','plotList',...
+                                'SelectionChangedFcn',@obj.selectPlot,...
+                                'SizeChangedFcn',@obj.resizePlotList);
+            elseif(strcmp(p.Results.listType,'tree'))
+                hs.plotList = uitree('parent',hs.layout,...
+                                'tag','plotList');
+            end
             set(hs.plotList,'Title',p.Results.listName);
             % Menu: Plot list context
             hs.plotList.UIContextMenu = uicontextmenu;
@@ -228,7 +273,7 @@ classdef tfigure < matlab.mixin.SetGet
         function varargout = addPanel(obj,varargin)
         %% addPanel 
         % Adds a panel to a tab.  
-        %  When the panel button is selected the panel is selected
+        %  When the panel button is selected, the panel is selected
         %
         % h = obj.addPanel([title],'tab',[h_tab],'plotFcn',[function_handle])
         %
@@ -255,6 +300,7 @@ classdef tfigure < matlab.mixin.SetGet
                 p.addOptional('title','panel',@ischar)
                 p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
                 p.addParameter('order',[],@isnumeric);
+%                 p.addParameter('group',[],@ischar);
                 p.parse(varargin{:})
             else
                 p.Results.tab = obj.tabGroup.SelectedTab;
@@ -263,10 +309,14 @@ classdef tfigure < matlab.mixin.SetGet
                 p.Results.order = [];
             end
             
+            
             % Select the Tab
             tab = obj.parseTab(p.Results.tab);
+            if(strcmp(tab.Title,'+') && isempty(tab.UserData))
+            error('tfigure:addPanel:addTab','Need to add a tab first before adding any panels to it. Call obj.addTab first.');
+            end
             
-            % Add the new analysis panel to the plot list
+            % Add the new panel to the plot list
             hs = get(tab,'UserData'); % The tab's UserData contains a handle to the uibuttongroup for the tab
             plotList = hs.plotList;
             h = uicontrol('parent',plotList,...
@@ -295,9 +345,16 @@ classdef tfigure < matlab.mixin.SetGet
             h.UserData.hp.UserData.h = obj;
             h.UserData.hp.UserData.cardNum = length(hs.CardPanel.Children);
             
-            % Setup order
-            plotList.Children = tfigure.childReorder(plotList.Children,p.Results.order);
+            % Setup order using the order or panelGroup parameters          
+            
+            order = p.Results.order;
+%             if(isempty(order) && ~isempty(p.Results.group))
+%                 groupLabel = findobj(obj.gct.UserData.plotList,'Style','text','String',p.Results.group);
+%                 groupLabel.UserData(end+1) = h;
+%             end
+            plotList.Children = tfigure.childReorder(plotList.Children,order);
             obj.resizePlotList(plotList,[]);
+            
             % Setup outputs
             switch nargout
                 case 0
@@ -365,7 +422,7 @@ classdef tfigure < matlab.mixin.SetGet
                     data = p.Results.legendTable;
                 end
 %                 colNames = 
-                hlt = uitable('Parent',hb,...
+                uitable('Parent',hb,...
                        'Units','normalized','Position',[0 0 1 1],...
                        'Tag','legend table','Data',data,...
                        'ColumnName',colNames);
@@ -459,7 +516,7 @@ classdef tfigure < matlab.mixin.SetGet
         function h = addLabel(obj,varargin)
         %% addLabel Adds a label to the plot list
         %
-        %  hl = h.addLabel(title,[tab],...)
+        %  hl = h.addLabel(title,...)
         %  
         % INPUTS
         %  title - text to display
@@ -533,7 +590,7 @@ classdef tfigure < matlab.mixin.SetGet
         % See also: tfigure, tfigure.tfigure
             p=inputParser;
             p.KeepUnmatched = true;
-            p.addOptional('title','table',@ischar)
+            p.addOptional('title','ctrl',@ischar)
             p.addOptional('fun_handle',[],@(x) isa(x,'function_handle'));
             p.parse(title,fun_handle,varargin{:});
             
@@ -596,6 +653,32 @@ classdef tfigure < matlab.mixin.SetGet
             obj.resizePlotList(plotList,[]);
             h.Parent.SelectedObject = CurrentPanelSelection; 
         end
+%         function groups = getPanelGroups(obj)
+%         % Get the groups of the current tab
+%             groups = findobj(obj.gct.UserData.plotList,'Style','text','String',p.Results.group);
+%         end
+%         function h = addGroup(obj,varargin)
+%         %addGroup A group consists of a title (label) and the panels grouped
+%         % under that label.  The panel group's position is always defined
+%         % relative to other groups by the position of the title (label)
+%         %
+%         % INPUTS
+%         %  title - The title that will be the text of the label
+%         %  panels - Optionally add panels to this panel group
+%         %
+%         % See also: tfigure
+%             p = inputParser;
+%             p.KeepUnmatched = true;
+%             p.addOptional('title','Group1',@ischar)
+%             p.addOptional('panels',[])
+% %             p.addParameter('order',length(obj.gct.UserData.plotList.Children),@isnumeric);
+%             p.parse(varargin{:});
+% %             if(~any(strcmp(varargin,'order')))
+% %                 varargin = [varargin 'order' p.Results.order];
+% %             end
+%             h = obj.addLabel(p.Results.title,varargin{:});
+%             h.UserData = p.Results.panels;      
+%         end
         %function export(obj,varargin)
         % export Exports an analysis panel, a tab, or an entire tfigure using
         % the specified format
@@ -774,25 +857,65 @@ classdef tfigure < matlab.mixin.SetGet
         end
         function h = get.gcp(obj)
         % gcp Get Current Panel
-        %  Returns the handle to the current tab
+        %  Returns the handle to the current panel
+%         tabLayoutChildren = get(obj.gct.Children,'Children')
             if(~isempty(obj.gct.UserData.plotList.SelectedObject))
                 h = obj.gct.UserData.plotList.SelectedObject.UserData.hp;
             else
                 h = [];
             end
         end
+        function set.gct(obj,value)
+            if(ischar(value))
+                value = strcmp({obj.tabGroup.Children.Title}, value);
+                if(~isempty(value))
+                    obj.tabGroup.SelectedTab = obj.tabGroup.Children(value);
+                else
+                	error('could not find %s panel',value)
+                end
+            elseif(isa(value,'matlab.ui.container.Tab') && any(value == obj.tabGroup.Children))
+                obj.tabGroup.SelectedTab = value;
+            elseif(isnumeric(value))
+                obj.tabGroup.Selected = Tabobj.tabGroup.Children(value);
+            else
+                error('The current tab can be set to a tab object in this tabGroup, the Title (char) of a tab in this tab group, or the tab number');
+            end
+        end
+        function set.gcp(obj,value)
+            tabLayoutChildren = get(obj.tabGroup.SelectedTab.Children,'Children');
+            tabPanels = get(tabLayoutChildren(1),'Children');
+            tabPanels(get(tabLayoutChildren(1),'Selection'));
+            if(ischar(value))
+                tabLayoutChildren(2).Children.String
+                obj.tabGroup.SelectedTab = obj.tabGroup.Children(strcmp({obj.tabGroup.Children.Title}, 'Design'));
+                value = find(strcmp({tabLayoutChildren(2).Children.String},value));
+                if(~isempty(value))
+                    set(tabLayoutChildren(1),'Selection',value)
+                else
+                    error('could not find %s panel',value)
+                end
+            elseif(isa(value,'matlab.ui.container.Tab'))
+                set(tabLayoutChildren(1),'Selection',value)
+            else
+                error('The current tab can be set to a tab object in this tabGroup or to the Title (char) of a tab in this tab group.');
+            end
+        end
         function t = get.tabs(obj)
-            t = obj.tabGroup.Children(1:end-1);
+            if(obj.addTabEnable)
+                t = obj.tabGroup.Children(1:end-1);
+            else
+                t = obj.tabGroup.Children;
+            end
         end
 %         function set.tabs(obj,in)
 %             obj.tabs = [in obj.tabs(end)]
 %         end
     end
     methods (Access = private)
-        function resizePlotList(~,src,~)
+        function resizePlotList(obj,src,~)
             if(~isempty(src.Children))
                 for pNum = 1:length(src.Children)
-                    pos = [5 src.Position(4)-30*pNum-15 src.Position(3)-10 20];
+                    pos = [5 src.Position(4)-(obj.buttonSize+5)*pNum-15 src.Position(3)-10 obj.buttonSize];
                     if(pos(3) <0)
                         pos(3) = 1;
                     end
@@ -809,7 +932,7 @@ classdef tfigure < matlab.mixin.SetGet
 %                 h_panels = [src.Children.UserData];
 %                 h_panels = [h_panels.hp];
                 if(~strcmp(src.SelectedObject.Tag,'button'))
-                    src.Parent.Parent.UserData.CardPanel.Selection = src.SelectedObject.UserData.hp.UserData.cardNum;
+                    src.Parent.Parent.UserData.CardPanel.Selection = find(src.Parent.Parent.UserData.CardPanel.Contents == src.SelectedObject.UserData.hp);
                 else
                     src.SelectedObject = callbackdata.OldValue;
                 end
@@ -823,6 +946,7 @@ classdef tfigure < matlab.mixin.SetGet
         end
         function selectTab(obj,~,~)
 %             obj.figResize(obj.fig);
+            % Set the current axes
             if(~isempty(obj.gcp) && ...
                ~isempty(findobj(obj.gcp.Children,'Type','axes')))
                 axes(findobj(obj.gcp.Children,'Type','axes'));
@@ -893,10 +1017,19 @@ classdef tfigure < matlab.mixin.SetGet
 %             else
 %                 selectPrevTabFcn = @(x)(1);
 %             end
-            delete(menu.Parent.UserData);
-            if(length(obj.gct.Parent.Children)>1 && find(obj.gct == obj.gct.Parent.Children) == length(obj.gct.Parent.Children))
-                obj.gct.Parent.SelectedTab = obj.gct.Parent.Children(end-1);
+            % delete the panel and button
+            deletedItemType = menu.Parent.UserData.Type; % uitab or uicontrol (button)
+            if(strcmp(deletedItemType,'uicontrol'))
+                delete(menu.Parent.UserData.UserData.hp)
             end
+            delete(menu.Parent.UserData);
+
+            if(strcmp(deletedItemType,'uitab') && ...
+               length(obj.gct.Parent.Children)>1 && find(obj.gct == obj.gct.Parent.Children) == length(obj.gct.Parent.Children))
+            	obj.gct.Parent.SelectedTab = obj.gct.Parent.Children(end-1);
+            end
+
+
 %             selectPrevTabFcn();
 %             end
             
@@ -917,7 +1050,7 @@ classdef tfigure < matlab.mixin.SetGet
         % childReorder reorders the children of tabs or plot lists
         %
         % INPUTS
-        %  children - 
+        %  children - children of tabs or plot lists
         %  Order - sets the an integer between 1 and length(children)+1 that 
         %  specifies its index.  If order is empty, the first child is 
         %  moved to the last child
@@ -928,6 +1061,39 @@ classdef tfigure < matlab.mixin.SetGet
             elseif((order > 1) && (order < length(children)))
                 children = children([2:order 1 (order+1):end]);
             end
+            
+            % Reorder those panels that belong to a label group so that
+            % all the panels of that label group are underneath the label
+%             labels = findobj(obj.gct.UserData.plotList,'Style','text');
+%             groups = labels(~(labels.UserData == []));
+%             if(~isempty(groups))
+%                 for groupN = 1:length(groups)
+%                     panels = groups(groupN).UserData;
+%                     for panelN = 1:length(panels)
+%                         groupChildIdx = find(children == groups(groupN));
+%                         panelChildIdx = find(children == groups(groupN));
+%                         childrenIdx = 1:length(children);
+%                         childrenIdx(panelChildIdx) = [];
+%                         if(groupChildIdx == length(children))
+%                             
+%                             children = [children(childrenIdx) children(panelChildIdx)];
+%                         else
+%                             
+% %                             childrenIdx = 
+%                             children = [children(childrenIdx(1:groupChildIdx-1)) children(panelChildIdx) children(childrenIdx(groupChildIdx:end))];
+% %                                 children = [children(childrenIdx(1:groupChildIdx)) children(panelChildIdx)];
+% %                         elseif(groupChildIdx<panelChildIdx)
+% %                             children = [children(childrenIdx(1:groupChildIdx-1)) children(panelChildIdx) children(childrenIdx(groupChildIdx:end))];
+% % %                             children = [children(childrenIdx:) children(panelChildIdx)];
+%                         end
+% %                         
+% %                         childrenIdx = 1:length(children);
+% %                         childrenIdx(childrenIdx== panelChildIdx) = [];
+% %                         childrenIdx = [1:groupChildIdx panelChildIdx groupChildIdx+1:length(childrenIdx)-1
+%                     end
+%                 end
+%             end
+            
         end
     end
 end

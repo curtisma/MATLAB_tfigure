@@ -1,4 +1,4 @@
-classdef tfigure < matlab.mixin.SetGet
+classdef tfigure_legacy < handle % < matlab.mixin.SetGet
     %% TFIGURE 
     % A figure for holding tabbed groups of plots.
     % Creates a tabbed plot figure.  This allows the user to setup tabs
@@ -115,10 +115,6 @@ classdef tfigure < matlab.mixin.SetGet
         %  h - a tfigure object
         % 
         % see also: tFigExample
-%             matlab_ver = ver('MATLAB');
-%             if(matlab_ver.Version < 9.1)
-%                 obj = tfigure_legacy(varargin{:});
-%             end
             p = inputParser;
             p.KeepUnmatched = true;
             p.addOptional('TabName','',@ischar);
@@ -304,7 +300,6 @@ classdef tfigure < matlab.mixin.SetGet
                 p.addOptional('title','panel',@ischar)
                 p.addParameter('tab',obj.tabGroup.SelectedTab,@(x) (isa(x,'double') || isa(x,'matlab.ui.container.Tab') || ischar(x)));
                 p.addParameter('order',[],@isnumeric);
-                p.addParameter('updateGCA',[],@islogical);
 %                 p.addParameter('group',[],@ischar);
                 p.parse(varargin{:})
             else
@@ -346,11 +341,6 @@ classdef tfigure < matlab.mixin.SetGet
             % Setup Panel
             h.UserData.hp = uipanel('Parent',hs.CardPanel,'Units','pixels',...
                                     'Tag',p.Results.title,'BorderType','none');
-            if ~isempty(p.Results.updateGCA)
-                h.UserData.updateGCA = p.Results.updateGCA;
-            else
-                h.UserData.updateGCA = true;
-            end
             h.UserData.hp.UserData.hc = h;
             h.UserData.hp.UserData.h = obj;
             h.UserData.hp.UserData.cardNum = length(hs.CardPanel.Children);
@@ -721,7 +711,7 @@ classdef tfigure < matlab.mixin.SetGet
                 p.Results.panel = obj.gcp;
             end
 
-            % Copy the panel to a seperate figure and then copy to clipboard
+            % Copy the panel to a seperate figure and copy tp clipboard
             hf = figure('Visible','off','Color','w');
             hp = copy(p.Results.panel);
             hp.Parent = hf;
@@ -729,10 +719,6 @@ classdef tfigure < matlab.mixin.SetGet
             hp.Units = 'normalized';
             hp.Position = [0 0 1 1];
             hp.Visible = 'on';
-            if strcmp(get(obj.fig,'WindowState'),'maximized')
-                set(hf,'WindowState','maximized');
-            end
-                
             print(hf,'-clipboard','-dbitmap')
             close(hf);
         end
@@ -774,9 +760,6 @@ classdef tfigure < matlab.mixin.SetGet
             hp.Position = [0 0 1 1];
             hp.Parent = h;
             hp.Visible = 'on';
-            if strcmp(get(obj.fig,'WindowState'),'maximized')
-                set(h,'WindowState','maximized');
-            end
             if(nargout == 1)
                 varargout{1} = h;
             elseif(nargout == 2)
@@ -798,8 +781,6 @@ classdef tfigure < matlab.mixin.SetGet
         %  subject - subject of presentation, included in file meta data
         %  comments - comments on the presentation
         %  author - Author's name
-        %  new - specifies whether to create a new pptx or add to one
-        %  already started with exportToPPTX (defaults to true)
         %
         % See also: tfigure, tfigure.tfigure
             if(~(exist('exportToPPTX','file')))
@@ -818,7 +799,6 @@ classdef tfigure < matlab.mixin.SetGet
             p.addParameter('author','');
             p.addParameter('subject','');
             p.addParameter('comments','');
-            p.addParameter('new',true);
             p.parse(varargin{:});
             if(isempty(p.Results.fileName))
                 [fileName,pathname] = uiputfile('.pptx','Export PPTX: select a file name');
@@ -830,19 +810,16 @@ classdef tfigure < matlab.mixin.SetGet
             else
                 fileName = p.Results.fileName;
             end
-            
-            if p.Results.new
-                isOpen  = exportToPPTX();
-                if ~isempty(isOpen)
-                    % If PowerPoint already started, then close first and then open a new one
-                    exportToPPTX('close');
-                end
-                exportToPPTX('new',... %'Dimensions',[12 6], ...
-                             'Title',p.Results.title, ...
-                             'Author',p.Results.author, ...
-                             'Subject',p.Results.subject, ...
-                             'Comments',p.Results.comments);
+            isOpen  = exportToPPTX();
+            if ~isempty(isOpen)
+                % If PowerPoint already started, then close first and then open a new one
+                exportToPPTX('close');
             end
+            exportToPPTX('new',... %'Dimensions',[12 6], ...
+                         'Title',p.Results.title, ...
+                         'Author',p.Results.author, ...
+                         'Subject',p.Results.subject, ...
+                         'Comments',p.Results.comments);
             exportToPPTX('addslide');
             exportToPPTX('addtext',p.Results.title,...
                          'HorizontalAlignment','center',...
@@ -854,14 +831,12 @@ classdef tfigure < matlab.mixin.SetGet
                 exportToPPTX('addtext',ht.Title,...
                              'HorizontalAlignment','center',...
                              'VerticalAlignment','middle','FontSize',48);
-%                 panels = [ht.UserData.Children.UserData];
-%                 panels = [panels.hp];
-                panels = get(ht.UserData.CardPanel,'Children');
+                panels = [ht.UserData.Children.UserData];
+                panels = [panels.hp];
                 for panelNum = 1:length(panels)
                     [h, hp] = obj.exportToFigure(panels(panelNum),'Visible','off');
                     hp.BackgroundColor = 'w';
                     exportToPPTX('addslide');
-%                     set(h,'WindowState','maximized');
                     exportToPPTX('addpicture',h,'Scaled','maxfixed');
                     close(h);
                 end
@@ -929,7 +904,8 @@ classdef tfigure < matlab.mixin.SetGet
             if(obj.addTabEnable)
                 t = obj.tabGroup.Children(1:end-1);
             else
-                t = obj.tabGroup.Children;
+                t=get(get(obj,'tabGroup'),'Children');
+%                 t = obj.tabGroup.Children;
             end
         end
 %         function set.tabs(obj,in)
@@ -961,10 +937,8 @@ classdef tfigure < matlab.mixin.SetGet
                 else
                     src.SelectedObject = callbackdata.OldValue;
                 end
-                if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))  && ...
-                   src.SelectedObject.UserData.updateGCA
-                    available = findobj(src.SelectedObject.UserData.hp.Children,'Type','axes');
-                    axes(available(1));
+                if(~isempty(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes')))
+                    axes(findobj(src.SelectedObject.UserData.hp.Children,'Type','axes'));
                 end
             else
                 set(src.Parent,'Widths',[0, -1]);
